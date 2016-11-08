@@ -1,0 +1,83 @@
+/*
+ * Application VisorPsi
+ * Author: Enrique Chavarriaga. Copyrigth 2015.
+ ****************************************************************************/
+ 
+.section-psi { border: none; margin-top: 5px;}
+.section-psi > ul.ui-tabs-nav { background: none; border-radius: 0; border-top: none; border-left: none; border-right: none; }
+.tab-psi { text-align: center; }
+.tab-psi > h1 { width: 800px; display: inline-block; font-size: 1.2em; border-bottom: gray 1px dotted; padding: 8px 0; margin: 8px 0;  }
+.tab-psi ul.ui-tabs-nav { background: none; border-top: none; border-left: none; border-bottom: none; border-radius: 0; }
+      
+
+.ui-dialog .ui-dialog-buttonpane { padding: 0; }
+.ui-dialog .ui-dialog-buttonpane button { margin: .3em .2em .3em 0; font-size: 0.8em; }
+.ui-dialog .ui-dialog-titlebar { padding: .2em 1em; }
+/*
+ * Toolbar Window
+ ******************************************************/
+.detail.ui-dialog-content { padding: 4px; font-size: 11px; }
+.detail.ui-dialog-content .td-label { font-weight: bold; }
+.detail.ui-dialog-content .td-name { background-color: #fcfcfc; font-size: 1.25em;}
+.detail.ui-dialog-content .td-members { padding: 0 4px; }
+.detail.ui-dialog-content .td-members h2 { font-size: 1.3em; font-style: italic; padding: 4px 0; margin: 0; }
+.detail.ui-dialog-content .ui-widget-header { background: none; border-top: none;border-left: none;border-right: none; }
+.detail.ui-dialog-content .psi-content-tabs.ui-widget-content { border: none; border-bottom-right-radius: 0px; }   
+.detail.ui-dialog-content .psi-content-tabs.ui-widget-content .ui-tabs-nav { border-bottom-right-radius: 0px; }
+.detail.ui-dialog-content .ui-tabs .ui-tabs-panel { padding: .8em 0em; }
+.detail.ui-dialog-content .item { padding: 4px; border-bottom: 1px dotted gray; }
+.detail.ui-dialog-content .item label { display: block;font-size: 1.2em;font-weight: bold; margin-bottom: 3px; }
+.detail.ui-dialog-content .item b { color: gray; }  
+
+/*
+ * Toolbar Window
+ ******************************************************/
+
+.docs-psi.ui-tabs-vertical { width: 800px; display: inline-block; text-align: left; border:none; }
+.docs-psi.ui-tabs-vertical .ui-tabs-nav { padding: .2em .1em .2em .2em; float: left; width: 130px; background-color: white; }
+.docs-psi.ui-tabs-vertical .ui-tabs-nav li { clear: left; width: 100%; border-bottom-width: 1px !important; border-right-width: 0 !important; margin: 0 -1px .2em 0; }
+.docs-psi.ui-tabs-vertical .ui-tabs-nav li a { display:block; }
+.docs-psi.ui-tabs-vertical .ui-tabs-nav li.ui-tabs-active { padding-bottom: 0; padding-right: .1em; border-right-width: 1px; }
+.docs-psi.ui-tabs-vertical .ui-tabs-panel { padding: 0; margin:0; float: right; width: 650px; }
+.docs-psi.ui-tabs-vertical .ui-tabs-panel h1 { font-size: 1.2em; text-align: left; }  
+.docs-psi.ui-tabs-vertical .ui-tabs-panel h2 { font-size: 1.1em; color: gray; font-style: oblique; text-align: left; } 
+.docs-psi.ui-tabs-vertical .ui-tabs-panel h3 { font-size: 1em; color: gray; text-align: left; } 
+.docs-psi.ui-tabs-vertical .ui-tabs-panel ul { -webkit-padding-start: 30px; } 
+.docs-psi.ui-tabs-vertical .ui-tabs-panel ul li { list-style-type: circle; }
+.pe-header { margin-top: 5px; width: 100%; border-top: 1px solid gray;border-bottom: 1px dotted gray; background-color: #fcfcfc; }
+.pe-header .pe-label { font-weight: bold; width: 20%; } 
+.pe-header .pe-public { width: 20%; }   
+.pe-content { padding: 0 20px; margin-bottom: 20px; } 
+.pe-content code { font-size: 1.2em; } 
+.pe-content ul { -webkit-padding-start: 20px; } 
+.pe-content ul li { list-style-type: circle; }                         
+.pe-content .pe-method code, 
+.pe-content .pe-event code { display: block; margin-bottom: 4px; } 
+.pe-function { margin: 4px 0;}
+.pe-function code { display: block; margin-bottom: 4px; padding-left: 0; } 
+.pe-var { margin: 4px 0;}
+.pe-var code { display: block; margin-bottom: 4px; padding-left: 0; } 
+.psi-iframe { width: 100%; border:none; margin: 0; padding:0; }
+.psi-xml-editor { min-height: 200px; }
+
+.cd-method code,
+.cd-event code,
+.cd-member code,
+.cd-property code{ display: block; margin-bottom: 4px; font-size: 1.2em; }
+.cd-method label,
+.cd-event label,
+.cd-member label,
+.cd-property label { border-bottom: 1px solid #cccccc; display: block; margin: 4px 0; }
+
+table.psi-structure { width: 100%; border-top: 2px solid gray; border-bottom: 1px solid gray;}
+table.psi-structure .tag { width: 10%; }
+table.psi-structure .strict { width: 5%; text-align: center; }
+table.psi-structure .multiplicity { width: 5%; text-align: center; }
+table.psi-structure .class { width: 10%; }
+table.psi-structure .validator { }
+table.psi-structure .tag-name { font-weight:bold; padding: 0px 10px; }
+table.psi-structure .root { background: rgb(217,255,220); }
+table.psi-structure th { text-align: center; background-color: #f0f0f0; }
+.notation { font-size: 0.9em; padding: 0 20px;}
+.fragment label { font-size: 0.9em; padding: 3px 0;}
+.warning { padding: 8px; margin: 2px 0; font-size: 0.9em; }

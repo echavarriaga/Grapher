@@ -1,0 +1,298 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ModelImplementationPsi>
+
+<Widget id="toolbar_widget">
+  <Option name="title">"Title here!!"</Option> 
+  <Option name="dialogClass">"psi-edit-xml"</Option> 
+  <Option name="resizable">false</Option> 
+  <Option name="width">200</Option> 
+  <Option name="height">'auto'</Option>
+  
+  <Event name="_create" arguments=""><![CDATA[
+    this._super();
+    this.element.css("padding","3px");
+    var that = this;
+    
+    //Adicionar botton de minimizar
+    this.uiDialogTitlebarMinimize = $("<a href='#'><span class='ui-icon ui-icon-minusthick'></span></a>")
+     	.addClass( "minimize ui-corner-all" )
+     	.attr( "role", "button" )
+     	.click(function(event) {
+     		event.preventDefault();	
+     		$("span",this).toggleClass("ui-icon-minusthick").toggleClass("ui-icon-plusthick");
+        that.uiDialogButtonPane.toggle(); 
+        that.element.toggle();							
+     		})
+     	.appendTo(this.uiDialogTitlebar); 
+    
+    //Adicionar mensaje
+    this.uiMessage = $("<div class='ui-corner-bottom'><p></p></div>")
+      .hide();
+    this.uiDialogTitlebar
+      .removeClass("ui-widget-header")
+      .addClass("ui-state-default")
+      .after(this.uiMessage);
+    $("<span class='ui-icon ui-icon-close'></span>")
+      .prependTo(this.uiMessage)
+      .click(function(){ $(this).parent().hide(); });
+    
+    //Depuás de crear el toolbar
+    if ($.isFunction(this.afterCreate))
+      this.afterCreate();
+  ]]></Event>
+  
+  <Method name="showMessage" arguments="message, type, autoClose" trycatch="false"><![CDATA[
+    $("p", this.uiMessage)
+      .empty()
+      .append(message);
+    $(this.uiMessage)
+      .removeClass("ui-state-error").removeClass("ui-state-highlight")
+      .width(this.uiDialogTitlebar.outerWidth()-2)
+      .addClass(type=="error" ? "ui-state-error" : "ui-state-highlight")
+      .show("blind", 500, 
+        autoClose 
+        ? function(){ 
+            var err = $(this); 
+            setTimeout(function(){err.hide("blind", 500);}, 1500); 
+          } 
+        : null
+        );
+  ]]></Method>
+  
+  <Method name="open" arguments="self, ref, context" trycatch="false"><![CDATA[
+    this._super();
+  ]]></Method>
+  
+  <Method name="destroy" arguments="" trycatch="false"><![CDATA[
+    this._super();
+  ]]></Method>
+</Widget>
+
+  
+<Widget id="edit_mirror_widget">
+  
+  <Method name="_createMirror" arguments="textarea" trycatch="false"><![CDATA[ ]]></Method>
+  
+  <Method name="_createNav" arguments="" trycatch="false"><![CDATA[
+    if (this.options.url){
+      //Crear botones
+      var nav = $("<div class='editor-nav' style='font-size: .9em;margin-bottom: 4px;'></div>").appendTo(this.element),
+          btnSave = $("<button>Save</button>").appendTo(nav);
+      //Botón Salvar
+      btnSave.get(0).editor = this;
+      btnSave
+        .button({ icons: { primary: "ui-icon-disk" } })
+        .click(function (event) { this.editor.save(); });
+    }
+    //Botón Evaluar
+  ]]></Method>
+  
+  <Method name="_createMessage" arguments="" trycatch="false"><![CDATA[
+    this.uiMessage = $("<div class='ui-corner-bottom'><p></p></div>")
+      .hide();
+    this.uiDialogTitlebar
+      .removeClass("ui-widget-header")
+      .addClass("ui-state-default")
+      .after(this.uiMessage);
+    $("<span class='ui-icon ui-icon-close' style='float: right;display: inline-block;'></span>")
+      .prependTo(this.uiMessage)
+      .click(function(){ $(this).parent().hide(); });
+  ]]></Method>
+  
+  <Event name="_create" arguments=""><![CDATA[
+    this._super();
+    this.element.css("padding","3px");
+    var that = this;
+    
+    //Adicionar botton de minimizar
+    this.uiDialogMinimize = $("<a href='#'><span class='ui-icon ui-icon-minusthick'></span></a>")
+     	.addClass( "minimize ui-corner-all" )
+     	.attr( "role", "button" )
+     	.click(function(event) {
+     		event.preventDefault();	
+     		$("span",this).toggleClass("ui-icon-minusthick").toggleClass("ui-icon-plusthick");
+        that.uiDialogButtonPane.toggle(); 
+        that.element.toggle();						
+     		})
+     	.appendTo(this.uiDialogTitlebar); 
+    
+    //Adicionar mensaje
+    if (this.options.tools)
+      this._createMessage();
+    
+    //Adicionar barra de botones
+    this._createNav(); 
+    
+    //Crear CodeMirror Editor
+    this.textarea = $("<textarea class='text-edit'></textarea>").appendTo(this.element); 
+    this.editor = this._createMirror(this.textarea.get(0));
+    this.isOpen = false;
+    this.element.append(
+      "<div class='editor-footer' style='font-size: 9px;'><b>Ctrl-F</b>: Start search. <b>Ctrl-G</b>:	Find next. "
+     +"<b>Shift-Ctrl-G</b>: Find previous.<b>Shift-Ctrl-F</b>: Replace. <b>Shift-Ctrl-R</b>: All replace.</div>" 
+    );
+    
+    //Redimensionar
+    this.options.resize = function( event, ui ) {
+      $("div.CodeMirror", this).height(Math.round(ui.size.height)-$("div.editor-nav").height()-$("div.editor-footer").height()-36);
+    }
+  ]]></Event>
+  
+  <Method name="showMessage" arguments="message, type, autoClose" trycatch="false"><![CDATA[
+    $("p", this.uiMessage)
+      .empty()
+      .append(message);
+    $(this.uiMessage)
+      .removeClass("ui-state-error").removeClass("ui-state-highlight")
+      .width(this.uiDialogTitlebar.outerWidth()-2)
+      .addClass(type=="error" ? "ui-state-error" : "ui-state-highlight")
+      .show("blind", 500, 
+        autoClose 
+        ? function(){ 
+            var err = $(this); 
+            setTimeout(function(){err.hide("blind", 500);}, 1500); 
+          } 
+        : null
+        );
+  ]]></Method>
+  
+  
+  <Method name="save" arguments="" trycatch="false"><![CDATA[
+    //Guardar fichero
+    try {
+      this.showMessage(GrapherApp.File.save(this.options.urlServer, this.editor.getValue(), this.options.type, this.options.name), "message", true);
+    }
+    catch(e) { this.showMessage(e.toString(), "error"); }
+  ]]></Method>
+  
+  <Method name="destroy" arguments="" trycatch="false"><![CDATA[
+    this._super();
+  ]]></Method>
+</Widget>
+  
+  
+<Widget id="edit_xml_widget">
+  <Option name="title">"Title here!!"</Option> 
+  <Option name="dialogClass">"psi-edit-xml"</Option> 
+  <Option name="width">600</Option> 
+  <Option name="height">400</Option>
+  <Option name="tools">true</Option>
+  <Option name="xml">null</Option>
+  <Option name="type">"xml"</Option>
+  
+  <Method name="_createMirror" arguments="textarea" trycatch="false"><![CDATA[
+    var completeAfter = function (cm, pred) {
+          var cur = cm.getCursor();
+          if (!pred || pred()) setTimeout(function() {
+            if (!cm.state.completionActive)
+              cm.showHint({completeSingle: false});
+          }, 100);
+          return CodeMirror.Pass;
+        },
+        completeIfAfterLt = function (cm) {
+          return completeAfter(cm, function() {
+            var cur = cm.getCursor();
+            return cm.getRange(CodeMirror.Pos(cur.line, cur.ch - 1), cur) == "<";
+          });
+        },
+        completeIfInTag = function (cm) {
+          return completeAfter(cm, function() {
+            var tok = cm.getTokenAt(cm.getCursor());
+            if (tok.type == "string" && (!/['"]/.test(tok.string.charAt(tok.string.length - 1)) || tok.string.length == 1)) return false;
+            var inner = CodeMirror.innerMode(cm.getMode(), tok.state).state;
+            return inner.tagName;
+          });
+        };
+    return CodeMirror.fromTextArea(textarea, {
+      tabSize: 2,
+      lineNumbers: true,
+      mode: "xml",
+      hintOptions: {schemaInfo: this.options.language ? this.options.language.tags : {}},
+      autoCloseBrackets: true,
+      styleActiveLine: true,
+      styleSelectedText: true,
+      //highlightSelectionMatches: {showToken: /\w/},
+      matchTags: {bothTags: true},
+      matchBrackets: true,
+      extraKeys: {
+        "'<'": completeAfter,
+        "'/'": completeIfAfterLt,
+        "' '": completeIfInTag,
+        "'='": completeIfInTag,
+        "Ctrl-Space": "autocomplete",
+      	"F11": function(cm) { cm.setOption("fullScreen", !cm.getOption("fullScreen")); },
+        "Esc": function(cm) { if (cm.getOption("fullScreen")) cm.setOption("fullScreen", false); },
+        "Ctrl-J": "toMatchingTag"
+      }
+    });
+  ]]></Method>
+ 
+  <Method name="open" arguments="" trycatch="false"><![CDATA[
+    this._super();
+    $("div.CodeMirror", this.element).height(this.element.height()-$("div.editor-nav").height()-$("div.editor-footer").height()-10);
+    if (!this.isOpen) {
+      //Abrir fichero
+      try {
+        if (this.options.url){
+          this.source = PsiXML.loadXMLSync(this.options.url);
+          this.editor.setValue( (new XMLSerializer()).serializeToString(this.source) );
+        }
+        else if(this.options.xml)
+          this.editor.setValue(this.options.xml);
+        this.isOpen = true;
+      }
+      catch(e) { this.showMessage(e.toString(), "error"); }
+    }
+  ]]></Method>
+</Widget>  
+  
+<Widget id="edit_json_widget">
+  <Option name="title">"Title here!!"</Option> 
+  <Option name="dialogClass">"psi-edit-xml"</Option> 
+  <Option name="width">600</Option> 
+  <Option name="height">400</Option>
+  <Option name="tools">true</Option>
+  <Option name="xml">null</Option>
+  <Option name="type">"json"</Option>
+  
+  <Method name="_createMirror" arguments="textarea" trycatch="false"><![CDATA[
+    return CodeMirror.fromTextArea(textarea, {
+      tabSize: 2,
+      //lineNumbers: true,
+      matchBrackets: true,
+      autoCloseBrackets: true,
+      mode: "application/ld+json",
+      lineWrapping: true
+    });
+  ]]></Method>
+ 
+  <Method name="open" arguments="" trycatch="false"><![CDATA[
+    this._super();
+    $("div.CodeMirror", this.element).height(this.element.height()-$("div.editor-nav").height()-$("div.editor-footer").height()-10);
+    if (!this.isOpen) {
+      //Abrir fichero
+      try {
+        if (this.options.url){
+          var options = {url: this.options.url, async: false, data: {}, dataType: "json", contentType: "application/x-www-form-urlencoded; charset=utf-8"},
+              self = this;
+          $.ajax(options)
+            .done(function(data, textStatus, jqXHR) { 
+              if (textStatus != "success")
+                throw new Error("Error loading JSON file");
+              self.source = jqXHR.responseText;
+            })
+            .fail(function(jqXHR, textStatus, errorThrown) { 
+              throw new Error("Error loading JSON file. Error: "+errorThrown);
+            });
+          this.editor.setValue( this.source );
+        }
+        this.isOpen = true;
+      }
+      catch(e) { this.showMessage(e.toString(), "error"); }
+    }
+  ]]></Method>
+</Widget>  
+  
+  
+  
+</ModelImplementationPsi>

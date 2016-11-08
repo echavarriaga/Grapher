@@ -1,0 +1,372 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ModelImplementationPsi>
+
+
+<Var id="table_def"><![CDATA[{
+  "bLengthChange": false,
+  "bPaginate": false,
+  "bInfo": false,
+  "bFilter": false
+}]]></Var>
+
+
+
+<Enum id="graph_type">
+  <Member name="Path" value="'path'"/>
+  <Member name="Shape" value="'shape'"/>
+</Enum>
+
+  
+<Object id="user_interface">
+  <Property name="template" default="null"/>
+  <Property name="fragments" default="null"/>
+
+  <Method name="init" arguments="urlTemplate"><![CDATA[
+    PsiData.document.register("template", urlTemplate);
+    this.template = PsiData.document.get("template");
+    //Agregar Scripts
+    var self = this;
+    this.fragments = {};
+    $("Fragment", this.template).each(function(){
+      self.fragments[$(this).attr("id")] = { 
+        interface: $(this).find("Interface").text(),
+        script: new Function("interface", "psi", $(this).find("Script").text())
+      };
+    });
+  ]]></Method>
+
+  <Method name="process" arguments="id, parent, type, element"><![CDATA[
+    var fragment = this.fragments[id],
+        interface = $( fragment.interface );
+    if (type && parent)
+      interface[type](parent);
+    fragment.script(interface, element);
+    return interface;
+  ]]></Method>
+</Object>
+
+
+  
+<Class id="debugging" arguments="params">
+  <Property name="form" default="this._createDialog(params)"/>
+  
+  <Method name="_createDialog" arguments="params"><![CDATA[
+    var form = $("<div class='send-file'></div>").appendTo("body"),
+        options = $.extend(true, {
+          debbuging: this, height: 250, width: 450, modal: true, title: "Debugging ...", autoOpen: true,
+          buttons: { 
+            "Cerrar": function() { $(this).dialog("close"); } 
+          },
+          close: function() { $(this).dialog("option", "debbuging").destroy(); }
+        }, params);
+    form.dialog(options);
+    return form;
+  ]]></Method>
+  
+  <Method name="message" arguments="label, text" trycatch="false"><![CDATA[
+    this.form.append("<b>"+label+"</b>: "+text+"<br/>");
+  ]]></Method>
+  
+  <Method name="destroy" arguments="" trycatch="false"><![CDATA[
+    this.form.empty().dialog("destroy").remove();
+  ]]></Method>
+</Class>
+
+  
+<Component id="grapher_app">
+  <Property name="manager" default="null"/>
+  <Property name="current" default="null"/>
+  
+  <Method name="init" arguments="section, urlTemplate"><![CDATA[
+    //Inicializar plantila de aplicación
+    UserInterface.init(urlTemplate);
+    
+    //Crear interface de aplicación
+    UserInterface.process("app", section, "appendTo", this);
+    UserInterface.process("menu", section.find(".grapher-menu"), "appendTo", this);
+    UserInterface.process("main", section.find(".grapher-main"), "appendTo", this);
+  ]]></Method>
+  
+  <Method name="openFiles" arguments="ftype, files, withRun"><![CDATA[
+    var table = $("table[file-type="+ftype+"]").dataTable();
+    table.fnClearTable();
+    files.each(function(){
+      table.fnAddData( File.row($(this).attr("name"), withRun) ); 
+    });
+    File.bindEvents(table);
+  ]]></Method>
+  
+  <Method name="getProjects" arguments="table"><![CDATA[
+    var projects = PsiXML.loadXMLSync(Project.url, {option: "list"}, {type: "POST"});
+    table.fnClearTable();
+    $("Project", projects).each(function(){
+      var row = $(this);
+      table.fnAddData([row.attr("alias"), "<button class='edit'>Open project</button><button class='delete'/>Delete project</button>"]); 
+    });   
+  ]]></Method>
+  
+  <Method name="currentPaint" arguments=""><![CDATA[
+    var editXML = $("<div id=xml-'"+Math.random()+"'></div>").appendTo("body");
+    editXML.editPsi({title: "Paint XML", xml: GrapherApp.manager.toXML()});
+    editXML.editPsi("open");
+  ]]></Method>
+</Component>
+  
+  
+<Object id="utils">
+  <Property name="saveUrl" default="'/grapherSaveFile'"/>
+  <Property name="deleteUrl" default="'/grapherDeleteFile'"/>
+  
+  <Method name="save" arguments="data" trycatch="false"><![CDATA[
+    return this.send(this.saveUrl, data);
+  ]]></Method>
+  
+  <Method name="delete" arguments="data" trycatch="false"><![CDATA[
+    return this.send(this.deleteUrl, data);
+  ]]></Method>
+  
+  <Method name="send" arguments="url, data" trycatch="false"><![CDATA[
+    var message = "...", error = true;
+    $.ajax({ url: url, async: false, data: data, type: "POST", dataType: "xml" })
+      .done(function(data, textStatus, jqXHR) { 
+        if (textStatus != "success")
+          message = "Status="+textStatus;
+        else if ($("Error", data).length==1)
+          message = $("Error", data).text();
+        else {
+          error = false;
+          message = $("Success", data).text();
+        }
+      })
+      .fail(function(jqXHR, textStatus, errorThrown) {
+        message = errorThrown; 
+      });
+    if (error) throw new Error(message);
+    return message;
+  ]]></Method>
+  
+  <Method name="getLanguage" arguments="ftype"><![CDATA[
+    switch(ftype){
+      case "graphs" : return { psi: Graphs, tags: Graphs.language().tagsToCodeMirror() };
+      case "paints" : return { psi: Paint, tags: Paint.language().tagsToCodeMirror() };
+    };
+    return { psi: null, tags: [] };
+  ]]></Method>
+  
+</Object>
+  
+  
+  
+<Object id="project">
+  <Property name="url" default="'/grapherProjects'"/>
+  
+  <Method name="new" arguments="alias" trycatch="false"><![CDATA[
+    return Utils.send(this.url, {option: "new", alias: alias});    
+  ]]></Method>
+  
+  <Method name="delete" arguments="alias" trycatch="false"><![CDATA[
+    return Utils.send(this.url, {option: "delete", alias: alias});    
+  ]]></Method>
+  
+  <Method name="open" arguments="alias"><![CDATA[
+    var project = PsiXML.loadXMLSync(this.url, {option: "open", alias: alias}, {type: "POST"});
+    current = alias;
+    $("#project-alias").text(alias);
+    openFiles("graphs", $("Graphs>File",project), true);
+    openFiles("paints", $("Paints>File",project), true);  
+    openFiles("data", $("Data>File",project));  
+    $("#projects-btn, #new-project-btn").addClass("ui-state-disabled");
+    return "Successfully loaded '"+alias+"' project";
+  ]]></Method>
+  
+  <Method name="close" arguments=""><![CDATA[
+    if (!confirm("Want to close the project: "+current)) return;
+      location.reload();
+  ]]></Method>
+  
+</Object>
+  
+  
+<Object id="file">
+  
+  <Method name="row" arguments="name, withRun"><![CDATA[
+    var editBtn = "<span class='ui-icon ui-icon-tag edit-file' file='"+name+"'></span>",
+        deleteBtn = "<span class='ui-icon ui-icon-trash delete-file' file='"+name+"'></span>",
+        runBtn = "<span class='ui-icon ui-icon-circle-triangle-e run-file' file='"+name+"'></span>"; 
+    return withRun===true ? [name, "0", editBtn+deleteBtn+runBtn] : [name, editBtn+deleteBtn];
+  ]]></Method>
+  
+  <Method name="bindEvents" arguments="table"><![CDATA[
+    table
+      .find("span.edit-file")
+      .click(function(){
+        var type = $(this).parents("table:first").attr("file-type");
+        GrapherApp.File.edit(type, $(this).attr("file"));
+      });
+    table
+      .find("span.delete-file")
+      .click(function(){
+        var type = $(this).parents("table:first").attr("file-type"),
+            message = $(this).parents("div.openFiles").find("#message");
+        try {
+          if (!confirm("Want to delete file: "+$(this).attr("file"))) return;
+          GrapherApp.File.delete(type, $(this).attr("file"));
+          var tr = $(this).parents("tr:first").get(0); 
+          this.table.fnDeleteRow( tr._DT_RowIndex );
+          message.hide();
+        }
+        catch(e) { 
+          message.addClass("ui-state-error").show();
+          message.find("#text").text(e.toString()); 
+        }
+      })
+      .each(function(){ this.table = table; });
+    table
+      .find("span.run-file")
+      .click(function(){
+        var type = $(this).parents("table:first").attr("file-type"),
+            run = $(this).parents("tr:first").find(".run");
+        run.text(parseInt(run.text())+1);
+        $(this).parents("tr:first").css("background-color","#DBFFCA");
+        try {
+          GrapherApp.File.run(type, $(this).attr("file"));
+        }
+        catch(e) { alert(e.toString()); }
+      });
+  ]]></Method>
+    
+  <Method name="run" arguments="ftype, fileName" trycatch="false"><![CDATA[
+    switch(ftype){
+      case "graphs": return Graphs.run(fileName, {url: "files/"+current+"/"+ftype+"/"+fileName}, GrapherApp.manager); 
+      case "paints": return Paint.run(fileName, {url: "files/"+current+"/"+ftype+"/"+fileName}, GrapherApp.manager);
+    }
+  ]]></Method>
+  
+  <Method name="edit" arguments="ftype, fileName"><![CDATA[
+    var id = (ftype+"-"+fileName).replace(".",""), edit = $("#"+id),
+        type = fileName.substr(fileName.lastIndexOf(".")+1).toLowerCase();
+    if (edit.length==0){
+      var url = current+"/"+ftype+"/"+fileName;
+      if (type=="xml")
+        edit = $("<div id='"+id+"'></div>")
+          .appendTo("body")
+          .editPsi({title: "File: "+url, url: "files/"+url, urlServer: url, language: Utils.getLanguage(ftype), name: fileName});
+      else if (type=="json")
+        edit = $("<div id='"+id+"'></div>")
+          .appendTo("body")
+          .editJSON({title: "File: "+url, url: "files/"+url, urlServer: url, name: fileName});
+    }
+    if (type=="xml")
+      edit.editPsi("open");
+    else if (type=="json")
+      edit.editJSON("open");
+  ]]></Method>
+    
+  <Method name="save" arguments="url, content, type, fileName" trycatch="false"><![CDATA[
+    if (type=="xml") {
+      var xml = $.parseXML(content), alias = $(xml).children().attr("alias");
+      if (alias)
+        PsiData.document[alias] = $.parseXML(content);
+      return Utils.save({file: url, content: content});
+    }
+    else if (type=="json") {
+      var alias = fileName.substr(0, fileName.lastIndexOf(".")); 
+      manager[alias] = $.parseJSON(content);
+      return Utils.save({file: url, content: content}, type);
+    }
+  ]]></Method>
+  
+  <Method name="delete" arguments="ftype, fileName" trycatch="false"><![CDATA[
+    var url = current+"/"+ftype+"/"+fileName;
+    return Utils.delete({file: url});
+  ]]></Method>
+  
+  <Method name="new" arguments="ftype, fileName" trycatch="false"><![CDATA[
+    var url = current+"/"+ftype+"/"+fileName,
+        content = "", type = fileName.substr(fileName.lastIndexOf(".")+1).toLowerCase(); 
+    switch(ftype){
+      case "graphs" : content = '<?xml version="1.0" encoding="utf-8"?>\n<GraphsPsi name="My Name">\n</GraphsPsi>'; break;
+      case "paints" : content = '<?xml version="1.0" encoding="utf-8"?>\n<PaintPsi xmlns:xlink="http://www.w3.org/1999/xlink" width="800" height="600">\n</PaintPsi>'; break;
+      case "data": 
+        content = type=="xml" 
+                ? '<?xml version="1.0" encoding="utf-8"?>\n<Data>\n</Data>' 
+                : type=="json" ? '{\n}' : ''; 
+        break;
+      default: throw Error("El tipo '"+ftype+"' de fichero no es soportado.");
+    };
+    return Utils.save({file: url, content: content});
+  ]]></Method>
+  
+  
+</Object>  
+
+  
+<Class id="grapher_manager" arguments="container, settings" init="this._init(settings)">
+  <Property name="svggen" default="container.svg().svg('get')"/>
+  <Property name="svgroot" default="this.svggen.root()"/>
+  <Property name="map" default="{}"/>
+  <Property name="paints" default="{}"/>
+
+  <Method name="_init" arguments="_settings"><![CDATA[
+    var settings = $.extend({width: 1000, height: 800}, _settings);
+    this.svggen.change(this.svgroot, settings);
+    this.svggen.defs("manager-defs");
+    //Actualizar SVG root
+    $(this.svgroot).attr({"xmlns": "http://www.w3.org/2000/svg", "xmlns:xlink": "http://www.w3.org/1999/xlink"});
+    this.svgroot.setAttribute("viewBox", "0 0 "+settings.width+" "+settings.height);
+  ]]></Method> 
+  
+  <Method name="addElement" arguments="element"><![CDATA[
+    this.map[element.id()] = element;
+  ]]></Method> 
+  
+  <Method name="getElement" arguments="id"><![CDATA[
+    return this.map[id];
+  ]]></Method> 
+  
+  <Method name="removeElement" arguments="id"><![CDATA[
+    if (this.map[id])
+      delete this.map[id];
+  ]]></Method>
+  
+  <Method name="removeAllElements" arguments="id"><![CDATA[
+    this.map = {};
+  ]]></Method>();
+  
+  <Method name="toXML" arguments=""><![CDATA[
+    var xml = "";
+    for (var i in this.map)
+      xml += "  "+this.map[i].toXML()+"\n";
+    return "<RootPaint>\n"+xml+"</RootPaint>";
+  ]]></Method>
+</Class>   
+  
+  
+<Script id="point"><![CDATA[
+function createPoint(svg, x, y) {  
+  var point = svg.createSVGPoint();
+  
+  //Crar funciones adicionales
+  point.set = function(_x, _y) {
+    this.x = Math.round( typeof _x=="number" ? _x : _x.x );
+    this.y = Math.round( typeof _x=="number" ? _y : _x.y );
+    return this;
+  };
+  point.plus = function(_x, _y){
+    this.x += Math.round( typeof _x=="number" ? _x : _x.x );
+    this.y += Math.round( typeof _x=="number" ? _y : _x.y );
+    return this;
+  };
+  point.minus = function(_x, _y){
+    this.x -= Math.round( typeof _x=="number" ? _x : _x.x );
+    this.y -= Math.round( typeof _x=="number" ? _y : _x.y );
+    return this;
+  };
+  //Incluir punto
+  point.set(x, y);
+  return point;
+}
+]]></Script>
+  
+  
+</ModelImplementationPsi>

@@ -1,0 +1,277 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ModelPsi id="model_grapher" name="Graficador  Psi" include-header="yes" version="1.0" acronym="grapher" 
+          description="Definición de  lenguaje GrapherPsi y PaintPsi para ó una aplicación gráfica ligera RSS">
+
+<Implementation alias="Common" url="psi/languages/grapher/Common.xml" file="Common.xml"/>
+<Implementation alias="Widgets" url="psi/languages/grapher/Widgets.xml" file="Widgets.xml"/>
+<Implementation alias="Graphs" url="psi/languages/grapher/Graphs.xml" file="Graphs.xml"/>
+<Implementation alias="Paint" url="psi/languages/grapher/Paint.xml" file="Paint.xml"/>
+
+<Var id="table_def" name="tableDef" public="yes" implementation="Common" description="Definición de tabla de datos"/>
+<Enum id="graph_type" name="GraphType" public="yes" implementation="Common" description="Tipo de elemento gráfico Psi"/>
+<Object id="user_interface" name="UserInterface" public="yes" implementation="Common" description="Interfaz de usuario para el graficador Psi">
+  <Properties template="null" fragments="null"/>
+  <Methods init="Inicializar interfaz de usuario obteniendo la plantilla" 
+           process="Procesar fragmento de interfaz de usuario"/>
+</Object>
+
+<Class id="debugging" name="Debugging" public="yes" implementation="Common" description="Caja de diálogo de debugging">
+  <Properties form="Caja de diálogo"/>
+  <Methods _createDialog="Crear caja de diálogo"
+           message="Adicionar mensaje"
+           destroy="Destruir caja de diálogo"/>
+</Class>
+  
+  
+<Component id="grapher_app" name="GrapherApp" public="yes" implementation="Common" description="Aplicación GrapherPsi">
+  <Properties manager="Administrador del diagrama Psi" current="proyecto activo"/>
+  <Methods init="Inicializa la aplicación GrapherPsi"
+           openFiles="Abrir lista de ficheros por tipo"
+           getProjects="Obtener lista proyectos"
+           currentPaint="Obtener editor de lista de elementos gráficos"/>
+  
+  <Object id="utils" name="Utils" public="no" implementation="Common" description="Utilitarios de la aplicación GrapherPsi">
+    <Properties saveUrl="Url de guardar información" deleteUrl="Url para eliminar ficheros"/>
+    <Methods send="Enviar petición al servidor"
+             save="Salver fichero"
+             delete="Borrar fichero"
+             getLanguage="Obtener lenguaje segun tipo"/>
+  </Object>
+  
+  <Object id="project" name="Project" public="yes" implementation="Common" description="Proyecto en GrapherPsi">
+    <Properties url="Url para administrar proyectos"/>
+    <Methods new="Crear nuevo proyecto"
+             delete="Eliminar proyecto con alias"
+             open="Abrir proyecto"
+             close="Cerrar proyecto"/>
+  </Object>
+  
+  <Object id="file" name="File" public="yes" implementation="Common" description="Fichero de GrapherPsi">
+    <Methods row="Nuevo registro para un tipo de archivo"
+             bindEvents="Enlazar eventos de edición eliminación"
+             run="Evaluar fichero con lenguaje GraphsPsi o PaintPsi"
+             edit="Editor de XML para los lenguajes GraphsPsi y PaintPsi y datos"
+             save="Guardar XML en servidor de GraphsPsi y PaintPsi y datos"
+             delete="Eliminar fichero "
+             new="Nuevo XML fichero para GraphsPsi y PaintPsi y datos"/>
+  </Object>
+</Component>  
+  
+  
+  
+<Class id="grapher_manager" name="GrapherManager" public="yes" implementation="Common" description="Administrador de elementos gráficos Psi">
+  <Properties svggen="Generador de elementos SVG" 
+              svgroot="Elemento raiz del diagrama SVG" 
+              map="Mapa de los elementos gráficos en el diagrama Psi" 
+              paints="Lista de programas de 'PaintPsi' ejecutados"/>
+  <Methods _init="Inicialización del administrador de programas"
+           addElement="Adicionar elemento gráfico al mapa"
+           getElement="Devuelve el elemento gráfico por su id. En caso de que no exista devuelve nulo"
+           removeElement="Remueve elemento gráfico del mapa por su id"
+           removeAllElements="Remueve todos los elementos gráficos"
+           toXML="Obtener xml de los elementos gráficos actuales"/>
+</Class>
+  
+<Script id="point" name="Point" implementation="Common" description="Creación de un punto SVG"/>
+  
+<Widget id="toolbar_widget" name="psi.toolbar" inherits="ui.dialog" implementation="Widgets" version="1.0" description="Barra de herramientas">
+  <Options title="Título barra de herramientas" dialogClass="Definición de clases CSS" resizable="Es redimensionable?" 
+           width="Ancho de barra de herramientas" height="Alto de barra de herramientas"/>
+  <Events _create="Crear toolbar"/>
+  <Methods showMessage="Mostrar mensaje según tipo"
+           open="Abre barra de herramientas Psi"
+           destroy="Destruir barra de herramientas Psi"/>
+</Widget>
+
+<Widget id="edit_mirror_widget" name="psi.editMirror" inherits="ui.dialog" implementation="Widgets" version="1.0" description="Editor Mirror">
+  <Events _create="Crear editor"/>
+  <Methods _createMirror="Crear editor CodeMirris"
+           _createNav="Crear barra de botones"
+           _createMessage="Crear mensaje"
+           showMessage="Mostrar mensaje de error"
+           save="Guarda contenido del editor"
+           destroy="Destruir editor Psi"/>
+</Widget>  
+  
+<Widget id="edit_xml_widget" name="psi.editPsi" inherits="psi.editMirror" implementation="Widgets" version="1.0" description="Editor de Lenguajes">
+  <Options title="Título del editor" dialogClass="Definición de clases CSS" tools="Visualizar barra de botones"
+           width="Ancho de barra de herramientas" height="Alto de barra de herramientas" type="Tipo de documento"/>
+  <Methods _createMirror="Crear editor CodeMirris"
+           open="Abre editor Psi"/>
+</Widget>
+  
+<Widget id="edit_json_widget" name="psi.editJSON" inherits="psi.editMirror" implementation="Widgets" version="1.0" description="Editor de Lenguajes">
+  <Options title="Título del editor" dialogClass="Definición de clases CSS" tools="Visualizar barra de botones"
+           width="Ancho de barra de herramientas" height="Alto de barra de herramientas" type="Tipo de documento"/>
+  <Methods _createMirror="Crear editor CodeMirror"
+           open="Abre editor JSON"/>
+</Widget>  
+  
+
+  
+  
+  
+<ComponentPsi id="graphs_component" name="Graphs" public="yes" implementation="Graphs" description="Definición de minilenguaje gráfico Psi.">
+  
+  <Texts id="graphspsi_messages" name="GRAPHSPSI" implementation="Graphs" description="Manejo de mensajes de GraphsPsi"/>
+  
+  <Class id="defs" name="Defs" public="yes" inherits="PsiXML.PsiElement" implementation="Graphs" description="Define un SVG para un elemento Psi">
+    <Statics map="Lista de definiciones de SVG"/>
+    <Events onInit="Obtiene el documento SGV de la fuente"/>
+  </Class>
+  
+  <Class id="drag_point" name="DragPoint" public="yes" implementation="Graphs" description="Definición de un punto de arrastre.">
+    <Properties parent="Referencia al elemento gráfico" circle="Definición SVG de círculo" />
+    <Methods _init="Iniciar el punto de movimiento"
+             bind="Enlazar drag-drop a elemento gráfico"
+             destroy="Remover el punto de arrastre"/>
+  </Class>
+  
+  <Class id="base" name="Base" public="yes" inherits="PsiXML.PsiElement" implementation="Graphs" description="Clase base para figuras y líneas">
+    <Events onInit="Registrar elemento gráfico Psi"/>
+    <Methods _initCreate="Crear referencias, adiciona definiciones, crea elementos de transformación"
+             _bindDrag="Enlazar evento para mover elemento gráfico Psi" 
+             cloneSVG="Hace una copia del elemento SVG definido"/>
+  </Class>
+  
+  <Class id="shape" name="Shape" public="yes" inherits="Base" implementation="Graphs" description="Definición de figura gráfica Psi.">
+    <Properties type="Tipo de elemento gráfico Psi"/>
+    <Methods create="Crea una figura Psi"/>
+  </Class>
+  
+  <Class id="label_point" name="LabelPoint" public="yes" implementation="Graphs" description="Creación de un rótulo en un punto referenciado">
+    <Properties _ref="Referencia a elemento Psi" svggen="Apuntador a diagrama" point="Punto de ubicación rótulo" text="Text rótulo"/>
+    <Methods _init="Inicializar rótulo de punto Psi" 
+             refresh="Refrescar posición y texto del rótulo Psi" 
+             refreshPosition="Refrescar posición del rótulo psi" 
+             modifyPosition="Modificación de posición del rotulo"/>
+  </Class>
+  
+  <Class id="path" name="Path" public="yes" inherits="Base" implementation="Graphs" description="Definición de un punto de movimiento.">
+    <Properties type="Tipo de elemento gráfico Psi"/>
+    <Methods create="Crea una línea Psi usando el elemento path de SVG"/>
+  </Class>
+  
+  <Class id="graphspsi" name="GraphsPsi" public="yes" inherits="PsiXML.PsiElement" implementation="Graphs" description="Manejo de definición de ">
+    <Properties defs="Definiciones" shapes="Mapa de figuras" paths="Mapa de caminos"/>
+    <Events onInit="Inicializa alias"/>
+  </Class>
+  
+  
+	<Parser id="graphspsi_parser" name="GraphsPsiParser" public="yes" implementation="Graphs" description="Analizador del Lenguaje GraphsPsi">
+    <Events onFinish="Stop application to finish its evaluation"/>
+	</Parser>
+	<Structure id="structure_graphs_psi" root="graphspsi">
+		<Element key="graphspsi" root="yes" tag="GraphsPsi" class-id="graphspsi">
+      <Child id="1" ref="defs" tag="Defs" multiplicity="0..1" property="defs"/>
+      <Child id="2" ref="shape" tag="Shape" multiplicity="0..n" property="shapes"/>
+      <Child id="3" ref="path" tag="Path" multiplicity="0..n" property="paths"/>
+    </Element>
+    <Element key="defs" tag="Defs" class-id="defs" chidren-strict="false"/>
+    <Element key="shape" tag="Shape" class-id="shape" chidren-strict="false"/>
+    <Element key="path" tag="Path" class-id="path" chidren-strict="false"/>
+	</Structure>
+</ComponentPsi>
+ 
+  
+  
+  
+<ComponentPsi id="paint_component" name="Paint" public="yes" implementation="Paint" description="Pintar elemetos gráfico Psi (Objetos y líneas).">
+  
+  <Texts id="paintpsi_messages" name="PAINTPSI" implementation="Paint" description="Manejo de mensajes de PaintPsi"/>
+  
+  <Class id="include" name="Include" public="yes" inherits="PsiXML.PsiElement" implementation="Paint" description="Cargar documento XML a PsiXML">
+    <Events onInit="Inicializar lectura de documento"/> 
+  </Class>
+  
+  <Class id="script" name="Script" public="yes" inherits="PsiXML.PsiElement" implementation="Paint" description="Ejecutar Script">
+    <Events onInit="Inicializar lectura de documento"/>
+    <Methods execute="Ejecutar script con parámetros parent y context"/>
+  </Class>
+  
+  <Class id="layer" name="Layer" public="yes" inherits="PsiXML.PsiElement" implementation="Paint" description="Capa de un diagrama Psi">
+    <Properties figures="Mapa de figuras" lines="Mapa de líneas" scripts="Lista de scripts"/>
+    <Events onInit="Inicializar capa Psi"/>
+  </Class>
+  
+  <Class id="setting" name="Setting" public="yes" inherits="PsiXML.PsiElement" implementation="Paint" description="Ajustes a un elmento svg de un elemento Psi">
+    <Events onInit="Inicializar propiedad 'key'"/>
+    <Methods apply="Aplicar configuración a un elemento gráfico Psi"/>
+  </Class>
+  
+  <Class id="base" name="Base" public="yes" inherits="PsiXML.PsiElement" implementation="Paint" description="Elemento gráfico base para el manejo de exceptiones visuales dentro de un diagrama Psi">
+    <Properties _svg="Lista de elementos SVG de un elemento gráfico"/>
+    <Events onInit="Crear figura Psi sobre el diagrama"
+            onChildrenCreated="Refrescar configuración"
+            onRemove="Remueve el SVG del diagrama Psi"/>
+    <Methods _createReferences="Crear referencias entre DPsi->GLPsi, DPsi&lt;->DOM, DPsi&lt;->SVG y SVG&lt;->DOM" 
+             applySettings="Aplicar cambios de configuración al elemento gráfico Psi usando la etiqueta Setting"
+             apply="Aplicar cambios de configuración al elemento gráfico Psi usando un objeto"
+             resize="Redimensionar figura en escala sx,sy" 
+             rotate="Rotar elemento gráfico un ángulo en grados" 
+             position="Obtener posición de la figura Psi respecto al origen del gráfico Psi"
+             refresh="Refrescar elemento gráfico Psi"/>
+  </Class>
+  
+  <Class id="figure" name="Figure" public="yes" inherits="Base" implementation="Paint" description="Clase base para Figura, Lista, Panel de un diagrama Psi">
+    <Properties _elementType="ElementType.Graph" settings="Lista de configuraciones de la figura Psi"/>
+    <Methods translate="Trasladar elemento gráfico a una nueva posición (x,y)" 
+             width="Ancho de figura Psi"
+             height="Alto de figura Psi"
+             toXML="Retorna el string XML de la figura"/>
+    <Events onRefresh="Refrescar figura Psi"/>
+  </Class>
+  
+  <Class id="line" name="Line" public="yes" inherits="Base" implementation="Paint" description="Clase línea en un diagrama Psi">
+    <Properties _elementType="ElementType.Path" settings="Lista de configuraciones de la línea Psi"/>
+    <Methods refreshLabel="Refrescar posición de label"
+             start="Punto inicial (x1,y1)"
+             end="Punto final (x2,y2)"
+             moveStart=" Mover punto inicial a (x,y)"
+             moveEnd=" Mover punto final a (x,y)"
+             toXML="Retorna el string XML de la linea"/>
+    <Events onRefresh="Refrescar linea Psi"/>
+  </Class>
+  
+  <Class id="modify" name="Modify" public="yes" inherits="Base" implementation="Paint" description="Modifica un elemento del diagrama (figura, linea, etc.)">
+    <Properties _elementType="ElementType.Graph" settings="Lista de configuraciones del elemento gráfico Psi"/>
+    <Methods _copy="Copia los metodos del elemento gráfico original"/>
+    <Events onInit="Crear figura Psi sobre el diagrama"/>
+  </Class>
+  
+  <Class id="paintpsi" name="PaintPsi" public="yes" inherits="PsiXML.PsiElement" implementation="Paint" description="Analizador del lenguaje PaintPsi">
+    <Properties layers="Lista de capas" includes="Lista de inclusiones" scripts="Lista de scripts" 
+                modifies="Lista de modificaciones de elementos gráficos"/>
+    <Events onInit="Inicializa alias"/>
+  </Class>
+  
+	<Parser id="paintpsi_parser" name="GraphsPsiParser" public="yes" implementation="Paint" description="Analizador del Lenguaje GraphsPsi">
+    <Events onFinish="Stop application to finish its evaluation"/>
+	</Parser>
+	<Structure id="structure_paint_psi" root="paintpsi">
+		<Element key="paintpsi" root="yes" tag="PaintPsi" class-id="paintpsi">
+      <Child id="10" ref="include" tag="Include" multiplicity="0..n" property="includes" index="alias"/>
+      <Child id="12" ref="layer" tag="Layer" multiplicity="0..n" property="layers"/>
+      <Child id="20" ref="script" tag="Script" multiplicity="0..n" property="scripts"/>
+      <Child id="18" ref="modify" tag="Modify" multiplicity="0..n" property="modifies"/>
+    </Element>
+    <Element key="include" tag="Include" class-id="include"/>
+    <Element key="script" tag="Script" class-id="script"/>
+    <Element key="layer" tag="Layer" class-id="layer">
+      <Child id="13" ref="figure" tag="Figure" multiplicity="0..n" property="figures"/>
+      <Child id="14" ref="line" tag="Line" multiplicity="0..n" property="lines"/>
+    </Element>
+    <Element key="figure" tag="Figure" class-id="figure">
+      <Child id="15" ref="setting" tag="Setting" multiplicity="0..n" property="settings" index="key"/>
+    </Element>
+    <Element key="line" tag="Line" class-id="line">
+      <Child id="16" ref="setting" tag="Setting" multiplicity="0..n" property="settings" index="key"/>
+    </Element>
+    <Element key="modify" tag="Modify" class-id="modify">
+      <Child id="19" ref="setting" tag="Setting" multiplicity="0..n" property="settings" index="key"/>
+    </Element>
+    <Element key="setting" tag="Setting" class-id="setting"/>
+	</Structure>
+</ComponentPsi>  
+	
+</ModelPsi>

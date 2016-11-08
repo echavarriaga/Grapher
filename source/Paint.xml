@@ -1,0 +1,364 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ModelImplementationPsi>
+
+
+<Texts id="paintpsi_messages">
+  <Language key="ES" name="Spanish">
+    <Text key="GRAPH_ERROR">Error creando '$1' Psi. No existe Identificador='$2'</Text>
+    <Text key="FIGURE_SETTING_ERROR">Error figura Psi '$1' NO existe SettingKey='$2'</Text>
+    <Text key="DEBUG_INCLUDE_EXIST">Ya existe documento XML con alias '$1'. No se incluirá nuevamente</Text>
+    <Text key="DEBUG_INCLUDE_REGISTER">Cargando documento XML con alias '$1'</Text>
+    <Text key="DEBUG_EXIST_ELEMENT">Actualizando elemento gráfico '$1'.</Text>
+    <Text key="DEBUG_REMOVE_ELEMENT">Removiendo elemento gráfico '$1'.</Text>
+    <Text key="MODIFY_ERROR">No existe elemento gráfico con identificador='$1'</Text>
+  </Language>
+</Texts>
+
+  
+<Class id="include" arguments="">
+  <Validator element-key="include" alias="*text" url="*text"/>
+  
+  <Event name="onInit" arguments=""><![CDATA[
+    var url = this.attr("url"),
+        type = url.substr(url.lastIndexOf(".")+1).toLowerCase();
+    this.alias = this.attr("alias");
+    if (type=="xml"){
+      if (PsiData.document.exist(this.alias)) {
+        PSIDEBUG("PAINTPSI.DEBUG_INCLUDE_EXIST", [this.alias]);
+        return;
+      }
+      PSIDEBUG("PAINTPSI.DEBUG_INCLUDE_REGISTER", [this.alias]);
+      PsiData.document.register(this.alias, url, this.attr("data"), this.attr("action"));
+      this.document = PsiData.document.get(this.alias);
+    }
+    else if (type=="json"){
+      var options = {url: url, async: false, data: {}, dataType: "json", contentType: "application/x-www-form-urlencoded; charset=utf-8"},
+          self = this;
+      $.ajax(options)
+        .done(function(data, textStatus, jqXHR) { 
+          if (textStatus != "success")
+            throw new Error("Error loading JSON file");
+          GrapherApp.manager[self.alias] = data;
+        })
+        .fail(function(jqXHR, textStatus, errorThrown) { 
+          throw new Error("Error loading JSON file. Error: "+errorThrown);
+        });
+    }
+  ]]></Event>
+</Class>
+
+  
+<Class id="script" arguments="">
+  <Validator element-key="script" id="*identifier" run="=no|select(yes,no)"/>
+  
+  <Event name="onInit" arguments=""><![CDATA[
+    PsiData.script[this.id()] = this;
+    this.body = this.text();
+    if (this.attr("run")=="yes")
+      this.execute(null, this.context);
+  ]]></Event>
+  
+  <Method name="execute" arguments="parent, context"><![CDATA[
+    var fexec = new Function("parent", "context", this.body);
+    fexec(parent, context);
+  ]]></Method>
+</Class>
+  
+  
+  
+<Class id="setting" arguments="">
+  <Validator element-key="setting" key="*identifier"/>
+  
+  <Event name="onInit" arguments=""><![CDATA[
+    this.key = this.attr("key");
+    if ($(this.parent._svg).find("[key="+this.key+"]").length!=1)
+      throw new PsiError("PAINTPSI.FIGURE_SETTING_ERROR", [this.parent.id(), this.key], [this]);
+    this._svg = $(this.parent._svg).find("[key="+this.key+"]").get(0);
+  ]]></Event>
+  
+  <Method name="apply" arguments=""><![CDATA[
+    for(var i=0; i<this._ref.attributes.length; i++){
+      var attr = this._ref.attributes[i]; 
+      switch(attr.name) {
+        case "key": break;
+        case "text": $(this._svg).text( this.parent.processValue(attr.value) ); break; 
+        default: this._svg.setAttribute(attr.name,this.parent.processValue(attr.value)); break;  
+      }
+    }
+  ]]></Method>
+</Class>
+  
+  
+
+<Class id="layer" arguments="">
+  <Validator element-key="layer" id="*identifier"/>
+  <Property name="scripts" default="{}"/>
+  <Property name="figures" default="{}"/>
+  <Property name="lines" default="{}"/>
+  
+  <Event name="onInit" arguments=""><![CDATA[
+    this._svg = this.context.svggen.group(this.context.svgroot, this.id());
+    if(this.hasAttr("class"))
+    	this._svg.setAttribute("class", this.attr("class"));
+  ]]></Event>
+</Class>
+
+ 
+  
+  
+<Class id="pbase" arguments="">
+  <Property name="_svg" default="null"/>
+  
+  <Event name="onInit" arguments=""><![CDATA[
+    var type = this._elementType, 
+        def = PsiData[type].get( this.attr(type) );  
+    if (def == null)
+      throw new PsiError("PAINTPSI.GRAPH_ERROR", [this.attr(type), this.id()], [this]);
+    var element = this.context.getElement(this.id()); 
+    if (element==null){
+      this._svg = def.create(this.context.svggen, this.id(), this.parent._svg, this);
+      this.context.addElement(this);
+    }
+    else{
+      PSIDEBUG("PAINTPSI.DEBUG_EXIST_ELEMENT", [this.id()]);
+      this._svg = element._svg;
+      if (this._svg._label!=null)
+        this._svg._label._ref = this;
+    }
+    if(this.hasAttr("class"))
+    	  this._svg.setAttribute("class", this.attr("class"));
+  ]]></Event>
+  
+  <Event name="onChildrenCreated" arguments=""><![CDATA[
+    this.refresh();
+    //Ejecutar scripts si los hay
+    if (this.hasAttr("scripts")){
+      var scripts = this.attr("scripts").split(",");
+      for(var i in scripts){
+        var name = scripts[i];
+        if (PsiData.script.exist(name))
+          PsiData.script[name].execute(this, this.context);
+      }
+    }
+    if (this.bindEvents)
+      this.bindEvents();
+  ]]></Event>
+  
+  <Event name="onRemove" arguments="self"><![CDATA[
+    $(this._svg).remove();
+  ]]></Event>
+
+  <Method name="applySettings" arguments=""><![CDATA[
+    for(var key in this.settings)
+      this.settings[key].apply();
+  ]]></Method>
+  
+  <Method name="apply" arguments="settings"><![CDATA[
+    for(var key in settings){
+      var setting = settings[key],
+          element = $(this._svg).find("[key="+key+"]");
+      if (element.length==1){
+        var elesvg = element.get(0);
+        for(var name in setting){
+          switch(name) {
+            case "text": $(elesvg).text( this.processValue(setting[name]) ); break; 
+            default: elesvg.setAttribute(name, this.processValue(setting[name])); break;  
+          }
+        }
+      }
+      
+    }
+  ]]></Method>
+  
+  <Method name="resize" arguments="scale"><![CDATA[
+    var s = scale.split(",");
+    this.attr("scale", scale);
+    this._svg._scale.angle = this._rotate.angle;
+    this._svg._scale.setScale(parseFloat(s[0]), s.length==2 ? parseFloat(s[1]):1); 
+  ]]></Method>
+  
+  <Method name="rotate" arguments="angle"><![CDATA[
+    var box = this._svg.getBBox();
+    this._svg._rotate.setRotate(Math.round(angle), box.x+box.width/2, box.y+box.height/2); 
+  ]]></Method>
+  
+  <Method name="position" arguments=""><![CDATA[
+    var ctm = this._svg.getCTM();
+    return createPoint(this.context.svgroot, ctm.e, ctm.f); 
+  ]]></Method>
+  
+  <Method name="refresh" arguments=""><![CDATA[
+    if (this.onRefresh)
+      this.onRefresh();
+    if (this.hasAttr("angle")) 
+      this.rotate(this.attr("angle"));
+    if (this.hasAttr("scale")) 
+      this.resize(this.attr("scale"));
+    this.applySettings(); 
+  ]]></Method>
+</Class>  
+
+
+  
+<Class id="figure" arguments="">
+  <Validator element-key="figure" id="*identifier" shape="*identifier" x="*number" y="*number" scale="=1,1|text" angle="=0|number"/>
+  <Property name="_elementType" default="GraphType.Shape"/>
+  <Property name="settings" default="{}"/>
+  
+  <Method name="translate" arguments="_x, _y" trycatch="false"><![CDATA[
+    var x = Math.round(_x ? _x : this._svg._translate.matrix.e),
+        y = Math.round(_y ? _y :this._svg._translate.matrix.f);
+    this._svg._translate.setTranslate(x, y); 
+  ]]></Method>
+  
+  <Method name="width" arguments="" trycatch="false"><![CDATA[
+    return this._svg.getBBox().width;
+  ]]></Method>
+  
+  <Method name="height" arguments="" trycatch="false"><![CDATA[
+    return this._svg.getBBox().height;
+  ]]></Method>
+  
+  <Method name="toXML" arguments="" trycatch="false"><![CDATA[
+    var data = this.attr("data-document") ? ' data-document="'+this.attr("data-document")+'"' : ""
+    return '<Figure id="'+this.id()+'" shape="'+this.attr("shape")+'" x="'+this._svg._translate.matrix.e+'" y="'+this._svg._translate.matrix.f+'"'+data+'/>';
+  ]]></Method>
+  
+  <Event name="onRefresh" arguments="" trycatch="false"><![CDATA[
+    this.translate(this.attr("x"), this.attr("y"));
+  ]]></Event>
+</Class>
+
+  
+
+<Class id="line" arguments="">
+  <Validator element-key="line" id="*identifier" path="*identifier" start="*text" end="*text" scale="=1,1|text" angle="=0|number"/>
+  <Property name="_elementType" default="GraphType.Path"/>
+  <Property name="settings" default="{}"/>
+  
+  <Method name="refreshLabel" arguments="" trycatch="false"><![CDATA[
+    if (this._svg._label){
+      this._svg._label.point = this._svg._line.getMiddle();
+      this._svg._label.refresh();
+    }
+  ]]></Method>
+  
+  <Method name="start" arguments="" trycatch="false"><![CDATA[
+    var s = this.attr("start").split(",");
+    $(this._svg._line).attr({x1: parseInt(s[0])-this._svg._translate.matrix.e, y1: parseInt(s[1])-this._svg._translate.matrix.f});
+  ]]></Method>
+  
+  <Method name="end" arguments="" trycatch="false"><![CDATA[
+    var s = this.attr("end").split(",");
+    $(this._svg._line).attr({x2: parseInt(s[0])-this._svg._translate.matrix.e, y2: parseInt(s[1])-this._svg._translate.matrix.f});
+  ]]></Method>
+  
+  <Method name="moveStart" arguments="x, y" trycatch="false"><![CDATA[
+    $(this._svg._line).attr({x1: x, y1: y});
+    this.refreshLabel();
+  ]]></Method>
+  
+  <Method name="moveEnd" arguments="x, y" trycatch="false"><![CDATA[
+    $(this._svg._line).attr({x2: x, y2: y});
+    this.refreshLabel();
+  ]]></Method>
+   
+  <Method name="toXML" arguments="" trycatch="false"><![CDATA[
+    var sX = this._svg._translate.matrix.e+this._svg._line.x1.baseVal.value, sY = this._svg._translate.matrix.f+this._svg._line.y1.baseVal.value,
+        eX = this._svg._translate.matrix.e+this._svg._line.x2.baseVal.value, eY = this._svg._translate.matrix.f+this._svg._line.y2.baseVal.value,
+        data = this.attr("data-document") ? ' data-document="'+this.attr("data-document")+'"' : "";
+    return '<Line id="'+this.id()+'" path="'+this.attr("path")+'" start="'+sX+","+sY+'" end="'+eX+","+eY+'"'+data+'/>';
+  ]]></Method>
+  
+  <Event name="onRefresh" arguments="" trycatch="false"><![CDATA[
+    this.start();
+    this.end();
+    this.refreshLabel();
+    this._svg._line.destroyPointDrag("_pstart");
+    this._svg._line.destroyPointDrag("_pend");
+  ]]></Event>
+</Class>
+  
+  
+  
+<Class id="modify" arguments="">
+  <Validator element-key="line" id="*identifier"/>
+  <Property name="_elementType" default="GraphType.Path"/>
+  <Property name="settings" default="{}"/>
+  
+  <Event name="onInit" arguments=""><![CDATA[
+    var element = this.context.getElement(this.id()); 
+    if (element==null)
+      throw new PsiError("PAINTPSI.MODIFY_ERROR", [this.id()], [this]);
+    else{
+      //Remover elemento gráfico
+      if (this.attr("remove")=="yes"){
+        $(element._svg).remove();
+        this.context.removeElement(element.id());
+        PSIDEBUG("PAINTPSI.DEBUG_REMOVE_ELEMENT", [this.id()]);
+        return;
+      }
+      //Modificar elemento gráfico
+      PSIDEBUG("PAINTPSI.DEBUG_EXIST_ELEMENT", [this.id()]);
+      
+      this._svg = element._svg;
+      this._elementType = element._elementType;
+      switch(this._elementType){
+        case "shape": this._copy(element, ["translate","width","height","onRefresh"]); break;
+        case "path": this._copy(element, ["refreshLabel","start","end","onRefresh"]); break;
+      }
+      if(this.hasAttr("class"))
+    	  this._svg.setAttribute("class", this.attr("class"));
+      //Asociar datos de creación
+      var TYPES = ["document", "context"];
+      for (var i in TYPES){
+        var data = "data-"+TYPES[i];
+        if (element.hasAttr(data)){
+          this.attr(data, element.attr(data));
+          this.initData(data);
+        }
+      }
+    }
+  ]]></Event>
+  
+  <Method name="_copy" arguments="element, array" trycatch="false"><![CDATA[
+    for(var i=0; i<array.length; i++){
+      var name = array[i];
+      this[name] = element[name];
+    }
+  ]]></Method>
+</Class>
+  
+  
+  
+<Class id="paintpsi" arguments="">
+  <Validator element-key="paintpsi" width="number" height="number"/>
+  <Property name="includes" default="{}"/>
+  <Property name="scripts" default="{}"/>
+  <Property name="layers" default="{}"/>
+  <Property name="modifies" default="{}"/>
+  
+  <Event name="onInit" arguments=""><![CDATA[
+    var w = this.attr("width"), h = this.attr("height"); 
+    if (w && h) {
+      $(this.context.svgroot).attr( {width: w, height: h} );
+      this.context.svgroot.setAttribute("viewBox", "0 0 "+w+" "+h);
+    }
+  ]]></Event>
+</Class>
+
+  
+<Parser id="paintpsi_parser" arguments="">
+  <Event name="onFinish" arguments="" trycatch="false"><![CDATA[
+    this.program.state = PsiXML.ProgramState.STOP;
+  ]]></Event>
+</Parser>
+
+<ComponentPsi id="paint_component">
+  <Initialize name="InitPaintPsi"><![CDATA[
+    PsiData.register("script");
+  ]]></Initialize>
+</ComponentPsi>
+
+
+</ModelImplementationPsi>
