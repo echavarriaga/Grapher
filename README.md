@@ -37,7 +37,9 @@ As a consequence, to specify and render diagrams by associating information sour
 component implements the *GraphsPsi language*, which manages the graphics elements from the graphics library. For its part, the Paint component implements the *PaintPsi language*
 in charge of managing the layout, with the possibility of binding XML and JSON information.
 
-## 3. GraphsPsi Grammar
+## 3. GraphsPsi Language and Graphs Component
+
+### 3.1 GraphsPsi Language
 The *GraphsPsi language* manages the graphics elements from the graphics library by defining the next tags: **GraphsPsi**, **Defs**, **Shape** and **Path**. Following 
 the steps mentioned at the beginning of this section, in Figure 2(a) we can see the [Psi Language Structure Diagram](http://hilas.ii.uam.es/api), and in la Figure 2(b) 
 we can see the corresponding attribute validation. According to Figure 2(a), the **GraphsPsi** element root is the starting point for the *graphics library*. In addition 
@@ -52,3 +54,111 @@ it contains next tags:
 
 ![Psi Language Structure Diagram](images/Figure2.png)<br>
 **Figure 2**. (a) PsiLSD for the GraphsPsi language. (b) PsiGVA for the GraphsPsi grammar. (c) Class diagram for the Graphs component.
+
+The fragment xml code shows the template definition for each of the elements detailed in the GraphsPsi language.
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<GraphsPsi alias="sample">
+  <Defs id="…">
+    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+      <defs> <!-- SVG definitions --> </defs>
+    </svg>    
+  </Defs>
+  <Shape id="…" drag-selector="…" defs="key1,key2,…">
+    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+      <!-- SVG graphics elements -->
+    </svg>
+  </Shape> ...
+  <Path id="…" key-line="…" class="pert" defs="key1,key2,…" drag-selector="…">
+    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+      <!-- SVG graphics elements -->
+    </svg>
+  </Path> ...
+</GraphsPsi>
+```
+
+### 3.2 Graphs Component
+The **Graphs** component implements the functionality associated with *GraphsPsi language* and Figure 2(c) shows its class diagram. To simplify, the class associated 
+to each tag has the same name, for example, the **Shape** tag has the *Shape* class and so on. It is noteworthy that the *GraphsPsi*, *Base* and *Defs* classes inherit 
+from the abstract class *PsiElement* from [PsiXML](http://hilas.ii.uam.es/api).
+
+When the Graphs component is initialized it creates three classifiers in the **PsiData**, namely: the "shape", "path" and "defs". The figures, lines and SVG definitions 
+will be stored and made available for each of classifier.
+
+Following Figure 2(c), *GraphsPsi* class manages the SVG definitions, the list of lines and the list of figures. *Defs* class register all SVG definitions in "defs" from 
+**PsiData** with its identifiers. *Base* class manages the SVG document for the graphics element (shape or line), registers the instance in **PsiData**, creates the drag 
+functionality by using the *drag-selector* attribute and binds the corresponding CSS style by using the *class* attribute. It also has the ability to clone the SVG elements 
+to "instantiate" the graphics element. The *Shape* and *Path* classes inherit from the Base class allowing customizing the drag and drop, scale and rotation functionalities. 
+The *DragPoint* class dynamically creates a point for the movement of the ends of a line, while the *LabelPoint* class creates a label for the line.
+
+The detailed class diagram and the documentation for the **Graphs** component can be find [here](http://hilas.ii.uam.es/grapher/api).
+
+## 4. PaintPsi Language and Paint Component
+
+### 4.1 PaintPsi Language
+The *PaintPsi language* aims to layout figures and lines basing on the GraphsPsi. To do so, it defines the following tags: **PaintPsi**, **Include**, **Script**, **Layer**, 
+**Figure**, **Line**, **Setting** and **Modify**. Following the same steps used in previous subsection, Figure 3(a) shows the [structure diagram](http://hilas.ii.uam.es/api) 
+for the *PaintPsi language*, and Figure 3(b) shows the validation attributes for the *PaintPsi grammar*. In Figure 3(a) the **PaintPsi** root tag specifies the width and height 
+for the active SVG canvas. In addition it allows detail the next tags:
+
+-  **Include** (optional, multiple): adds XML and JSON data with an alias in **PsiData** (in "document" and "json" classifiers respectively).
+-  **Script** (optional, multiple): defines a script that is executed when the Psi program is evaluated.
+-  **Layer** (optional, multiple): it defines the concept of graphics layer that contains figures, lines and scripts. The concept of graphics layer refers to the depth 
+   for a group of elements, for example, if it is the background then it is defined at first label, but if it is in the foreground then it is defined at last label. 
+   Next we list the children tags:
+
+   * **Figure** (optional, multiple): it instances a figure based on an element from the *graphics library*. To do so, it has an identifier, the reference to the *Shape* 
+     instance, the location coordinates *x* and *y*, the *scale* and the *angle*.
+   * **Line** (optional, multiple): it instances a straight line based on a SVG line from the graphics library. It has an *identifier* attribute, a reference for a *Path* 
+     instance, the coordinates for the starting and end points the end point, the scale and the angle.
+
+-  **Modify**: it modifies a graphics element (**Line** or **Figure**) previously created by using a **Setting** tag.
+-  **Setting** (optional, multiple): it defines and modifies SVG elements for both figures and lines. It has a *key* attribute that refers to the SVG element where changes 
+   will be applied.
+
+![Psi Language Structure Diagram](images/Figure3.png)<br>
+**Figure 3**. (a) PsiLSD for the PaintPsi language. (b) PsiGVA for the PaintPsi grammar. (c) Class diagram for the Paint component.
+
+The fragment xml code shows the template for each element from the PaintPsi language.
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<PaintPsi xmlns:xlink="http://www.w3.org/1999/xlink" width="…" height="…">
+  <Include alias="…" url="…" type="…"/> ...
+  <Layer id="…" class="…">
+    <Figure id="…" x="x" y="y" shape="…" data-document="…" scale="…" angle="…">
+      <Setting key="…" …="…" …/> ...
+    </Figure> ...
+    <Line id="…" path="…" start="x1,y1" end="x2,y2" scale="…" angle="…">
+      <Setting key="…" …="…" …="…"/> ...
+    </Line> ...
+    <Script id="…"><!-- Script definition --></Script> ...
+  </Layer> ...
+  <Script id="…"><!-- Script definition --></Script> ...
+</PaintPsi>
+```
+
+### 4.2 Paint Component
+The **Paint** component implements the functionality associated with the *PaintPsi language*, as shown in the class diagram of Figure 3(c). As in the **Graphs** component, 
+the class associated with each tag has the same name, that is, the **PaintPsi** tag is related to the *PaintPsi* class, the **Include** tag is related to the *Include* class, 
+and so on.
+
+The *PaintPsi* root class manages the graphics layers, the inclusions and the scripts. It initializes the context and adds all the available layers to the active SVG canvas.
+The *Include* class is responsible for fetching and registering XML documents and JSON objects into PsiData. The *Script* class registers scripts, which are used to add 
+dynamism to the diagram and, once evaluated, are available three environment variables: the active SVG canvas, the PsiData, and current elements graphics.
+
+The *Layer* class aims to create and manage the graphics layer. It uses the SVG g tag as grouper and adds it to the active canvas with an identifier and a CSS class. Furthermore, 
+it paints the list of figures and list lines.
+
+The *Base* class implements the painting process for both figures and lines. To do so, it uses the reference for the graphics definition (graph or path attributes respectively) and 
+creates an instance (line or figure respectively). In addition, the *Base* class implements the functionality to resize, rotate and change the configuration of SVG elements 
+of a graphics element through instances of *Setting*. The *Setting* class seeks SVG element by using the key attribute and performs configuration changes.
+
+The *Figure* class inherits from the Base class and aims to paint a picture. It implements the functionality to move the figure to a new position and to report on its size 
+(width and height). The *Line* class inherits from the Base class too and aims to paint a straight line. It implements the ability to move the starting and end points. 
+To implement polylines or Bessel curves it is necessary typify the Line class and add corresponding behaviour of each one.
+
+The class diagram and detailed documentation for the Paint component can be find [here](http://hilas.ii.uam.es/grapher/api).
+
+
