@@ -161,4 +161,47 @@ To implement polylines or Bessel curves it is necessary typify the Line class an
 
 The class diagram and detailed documentation for the Paint component can be find [here](http://hilas.ii.uam.es/grapher/api).
 
+## 5. Example using the GraphsPsi and PaintPsi languages
+Figure 4 shows a snippet of the graphics library in *GraphsPsi* language ("library.xml" file) and a fragment of a *PaintPsi* code diagram (file "maths.xml"). This example 
+highlights the bindings of *GraphsPsi* and *PaintPsi* languages with XML information (file "db.xml"). This example is available in the "Sample" project of the Grapher 
+application (see next section).
+
+The "library.xml" fragment provides the following elements: Defs (Symbols id = "home" and id="user"; Markers id="circle"; Styles id="styles"), Shapes (id="element") and 
+Paths (id="connection").
+
+The "maths.xml" fragment Figure 4 loads the XML file (with url="files/Sample/data/db.xml") and makes it available with the alias db. It can be seen that the Figure with 
+id="p1" is moved to the position (250,50) and has the reference to the Shape graphic element with id="element". In addition, with the use of the PsiLI microlanguage the 
+node Person with id="1" (attribute data-document) from file "db.xml" is associated. To get the name "Evariste Galöis" we use the PsiCA microlanguage and extract it from 
+the XML file through the Setting tag (text="{{p.name}}"). This name is added as text in the SVG text label. The symbol used to figure id="p1" is the "user" (href="# user"). 
+The visual effect of this sequence can be seen in Figure 4.
+
+![Binding GraphsPsi and PaintPsi](images/Figure4.png)<br>
+**Figure 4**. Binding GraphsPsi and PaintPsi with XML information.
+
+## 6. 4.5	Grapher Web Application
+Once implemented the **Graphs** and **Paint** reusable components, we have developed the web application we have called **Grapher**. This application is a lightweight development 
+environment for creating diagrams and graphs models. It is based on projects, the edition of XML files and the use of the **Paint** and **Graphs** components.
+
+In Figure 5, we can see a **Grapher** snapshot where we can identify two sections: Project and Psi Diagram. A project is a set of graphics libraries (files GraphsPsi), 
+layout (PaintPsi files), XML data sources (XML files) and JSON data sources (JSON files). The Psi Diagram is a SVG canvas where the layouts files will be evaluated. 
+The Grapher main features are described below:
+
+-  **Project Menu**: it creates, opens or closes a project. Create a project involves creating a directory on the server with the alias of the project, and inside this 
+   directory three additional subdirectories, namely: graphs (to host GraphsPsi files), paints (to host PaintPsi files) and data (to hosts XML and JSON data files). Open 
+   a project means to bring the directory structure and manage it in the Project section. Each subdirectory is shown in the corresponding tab (Graphs Psi, Paint Psi and Data). 
+   Delete a project involves removing the directory from the server. In addition, there are debugging tools, and features to allow cleaning the diagram, seeing the SVG 
+   generated code and displaying the PaintPsi source code.
+-  **GraphsPsi Editor**: it edits GraphsPsi source code file from the active project. The editor provides autocompletion tools for the *GraphsPsi grammar*. When evaluating a 
+   GraphsPsi file, the graphic elements are available in PsiData and the number of executions is increased and highlighted in green.
+-  **PaintPsi Editor**: it edits PaintPsi source code file from the active project. In the same way the GraphsPsi Editor, it has autocompleting features for the *PaintPsi grammar*. 
+   When evaluating a PaintPsi file, its layout is built on the SVG canvas from the Psi Diagram section and the number of executions is increased and highlighted in green. 
+   It must be notice that if the same program is evaluated twice, the graphic elements change but no more are added.
+-  **XML Editor**: it edits XML data files (*.xml).
+-  **JSON Editor**: it edits JSON data files (*.json).
+
+![Grapher](images/Figure5.png)<br>
+**Figure 5**. *Grapher*: lightweight development environment for the use Graphs and Paint components.
+
+## 7. Installation
+Create a website and copy all files. The file "index.html" running **Grapher Web Application**. The file "api.html" is documentation the **Graphs** and **Paint** component. 
 
