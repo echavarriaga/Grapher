@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?><PaintPsi xmlns:xlink="http://www.w3.org/1999/xlink" width="800" height="600">
+  <Layer id="flows" class="bpm">
+    <Figure id="flows-group" x="20" y="20" shape="bpm-group">
+      <Setting key="title" text="Flows" x="95"/>
+      <Setting key="box" href="#" width="200" height="220"/>
+    </Figure>
+    <Line id="flow-normal" path="bpm-flow" start="40,70" end="200,70" class="flow-normal" label="Normal Flow" label-pos="0 -5"/>
+    <Line id="flow-conditional" path="bpm-flow" start="40,100" end="200,100" class="flow-conditional" label="Conditional Flow" label-pos="0 -5"/>
+    <Line id="flow-default" path="bpm-flow" start="40,130" end="200,130" class="flow-default" label="Default Flow" label-pos="0 -5"/>
+    <Line id="flow-message" path="bpm-flow" start="40,160" end="200,160" class="flow-message" label="Message Flow" label-pos="0 -5"/>
+    <Line id="association-none" path="bpm-flow" start="40,190" end="200,190" class="association-none" label="Association None" label-pos="0 -5"/>
+    <Line id="association-direction" path="bpm-flow" start="40,220" end="200,220" class="association-direction" label="Association Direction" label-pos="0 -5"/>
+  </Layer>
+</PaintPsi>

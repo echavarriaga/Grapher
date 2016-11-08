@@ -1,0 +1,313 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Template>
+
+
+<Fragment id="app">
+<Interface><![CDATA[
+  <header class="grapher-header">
+     <nav style="padding: 5px 5px; margin-top: 18px; float: right; text-align: right;">
+       <a id="clear-btn">Clean diagram</a>
+       <a id="source-svg-btn">View file SVG</a>
+     </nav>
+     <img src="images/top.png" />
+  </header>
+  
+  <section class="grapher-body">
+    <table style="width:100%" cellpadding="3px">
+      <tr>
+        <td class="grapher-menu"></td>
+        <td class="grapher-main"></td>
+      </tr>
+    </table> 
+  </section>
+  
+  <footer class="grapher-footer"></footer>
+]]></Interface>
+<Script arguments="interface, psi"><![CDATA[
+   // Botón limpiar diagrama
+  $("#clear-btn",interface)
+    .button({icons: {primary: "ui-icon-tag"}})
+    .click(function(){ GrapherApp.manager.svggen.clear(); });
+  // Botón ver SVG
+  $("#source-svg-btn",interface)
+    .button({icons: {primary: "ui-icon-search"}})
+    .click(function(){ UserInterface.process("sourceSVG", $("body"), "appendTo", {}); });
+]]></Script>
+</Fragment>
+
+  
+<Fragment id="menu">
+<Interface><![CDATA[
+  <section class="ui-tabs ui-widget ui-widget-content ui-corner-all">
+    <div class="ui-widget-header ui-corner-all grapher-title">Projects</div>
+    <nav style="padding: 4px 0px;">
+       <a id="new-project-btn" style="margin:0">New Project ...</a>
+       <a id="projects-btn" style="margin:0">Projects List ...</a>
+       <a id="close-project-btn" style="margin:0">Close Project</a>
+       <a id="scrubber-btn" style="margin:0">Debugger</a>
+    </nav>
+    <div class="group">
+      <h3>Graphs Psi</h3>
+      <div id="menu-graphs" class="grapher-section"></div>
+    </div>
+    <div class="group">
+      <h3>Paints Psi</h3>
+      <div id="menu-paints" class="grapher-section"></div>
+    </div>
+    <div class="group">
+      <h3>Data</h3>
+      <div id="menu-data" class="grapher-section"></div>
+    </div>
+  </section>
+]]></Interface>
+<Script arguments="interface, psi"><![CDATA[
+  //Programa Menu
+  /*$("#menu",interface)
+    .accordion({ header: "> div > h3"})
+    .sortable({ axis: "y", handle: "h3" })
+    .find(".grapher-section")
+      .css({padding: "0px"});*/
+
+  //Botón nuevo proyecto
+  $("#new-project-btn",interface)
+    .button({icons: { primary: "ui-icon-document" },  text: false})
+    .click(function(){ UserInterface.process("newProject", $("body"), "appendTo", this.app); })
+    .each(function(){ this.app = psi });
+  
+  //Botón nuevo proyecto
+  $("#projects-btn",interface)
+    .button({icons: { primary: "ui-icon-folder-open" },  text: false})
+    .click(function(){ UserInterface.process("projects", $("body"), "appendTo", this.app); })
+    .each(function(){ this.app = psi });
+
+  //Botón cerrar proyecto
+  $("#close-project-btn",interface)
+    .button({icons: { primary: "ui-icon-circle-close" },  text: false})
+    .click(function(){ GrapherApp.closeProject(); });
+
+  //Botón debugger
+  $("#scrubber-btn",interface)
+    .button({icons: { primary: "ui-icon-wrench" },  text: false})
+    .click(function(){ PsiOut.console.openDebugger(); });
+
+  //Crear submenus
+  UserInterface.process("openFiles", $("#menu-graphs"), "appendTo", {ftype: "graphs"});
+  UserInterface.process("openFiles", $("#menu-paints"), "appendTo", {ftype: "paints"});
+  UserInterface.process("openFiles", $("#menu-data"), "appendTo", {ftype: "data"});
+]]></Script>
+</Fragment>
+  
+
+<Fragment id="main">
+<Interface><![CDATA[
+  <section class="ui-tabs ui-widget ui-widget-content ui-corner-all">
+    <div class="ui-widget-header ui-corner-all grapher-title">Psi Diagrams</div>
+    <div id="diagram"></div>
+  </section>
+]]></Interface>
+<Script arguments="interface, psi"><![CDATA[
+  //Crear administrador del graficador Psi
+  psi.manager = new GrapherManager( $("#diagram", interface) );  
+]]></Script>
+</Fragment>
+
+
+<Fragment id="newProject">
+<Interface><![CDATA[
+  <div id="new-project">
+    <table cellpadding="3" cellspacing="0" border="0" width="98%">
+      <tr>
+        <td style="width:10%"><b>Alias</b>:</td>
+        <td><input type="text" name="alias" placeholder="Alias project ..." value="" size="20" max="20" required="required" class="ui-corner-all"/></td>  
+      </tr>
+      <tr>
+        <td style="width:10%; vertical-align: top;"><b>Nota</b>:</td>
+        <td>
+          The project will create three subdirectories: <br/>
+          * <b>graph</b>: subirectorio for creating graphical library.<br/>
+          * <b>paint</b>: Subdirectory for creating figures and models.<br/>
+          * <b>data</b>: Subirectorio for creating XML files.<br/>
+        </td>  
+      </tr>
+    </table>
+    <div id="message" class="ui-state-highlight ui-corner-all" style="margin-top: 5px; padding:.5em; display: none;">
+      <span class="ui-icon ui-icon-info" style="float: left; margin-right: .3em;"></span>
+      <strong>Alerta:</strong> <span id="text"></span>
+    </div>
+  </div>
+]]></Interface>
+<Script arguments="interface, psi"><![CDATA[
+  //Definir tabla
+  interface.dialog({
+    title: "New Project", 
+    width: 500, 
+    grapher: psi,
+    buttons: {
+      "Crear": function(event, ui){
+        var grapher = $(this).dialog("option", "grapher");
+        $("#message", this).removeClass("ui-state-error").show();
+        try {
+          $("#text", this).text( grapher.newProject($("[name=alias]", this).val()) );
+        }
+        catch(e) { 
+          $("#message", this).addClass("ui-state-error");
+          $("#text", this).text(e.toString()); 
+        }
+      },
+      "Cancelar": function(event, ui){ $(this).dialog("close"); }
+    },
+    close: function() { 
+      //$(this).dialog("destroy");
+      $(this).remove(); 
+    } 
+  });
+]]></Script>
+</Fragment> 
+
+
+  
+<Fragment id="projects">
+<Interface><![CDATA[
+  <section>
+    <div id="message" class="ui-state-highlight ui-corner-all" style="margin-top: 5px; padding:.5em; display: none;">
+      <span class="ui-icon ui-icon-close message-close" style="cursor:pointer; display:inline-block;float: right" alt="Cerrar"></span>
+      <span class="ui-icon ui-icon-info" style="float: left; margin-right: .3em;"></span>
+      <strong>Alert:</strong> <span id="text"></span>
+    </div>
+    <div id="projects">
+      <table cellpadding="0" cellspacing="0" border="0" class="projects"> </table> 
+    </div>
+  </section>
+]]></Interface>
+<Script arguments="interface, psi">
+            <![CDATA[
+  //Definir tabla
+  var cols = [{sTitle: "Alias", sClass: "alias"}, {sClass: "button", asSorting: false}],
+      table = $("table.projects", interface).dataTable( $.extend({aoColumns: cols},tableDef) );
+  
+  psi.projectsDialog = interface.dialog({
+    title: "Projects GrapherPsi", width: 350, table: table, grapher: psi, message: $("div#message",interface),
+    open: function(event, ui){
+      var grapher = $(this).dialog("option", "grapher"),
+          message = $(this).dialog("option", "message"),
+          fclick = function(){
+            var tr = $(this).parents("tr:first").get(0),
+                data = this.table.fnGetData(tr);
+            try {
+              if (this.action=="deleteProject" && !confirm("Want to delete project: "+data[0])) return;
+              this.message.removeClass("ui-state-error").show();
+              this.message.find("#text").text( this.grapher[this.action](data[0]) );
+              if (this.action=="deleteProject")
+                this.table.fnDeleteRow( tr._DT_RowIndex );
+            }
+            catch(e) { 
+              this.message.addClass("ui-state-error");
+              this.message.find("#text").text(e.toString()); 
+            }
+          };
+
+      //Obtener lista de proyectos
+      grapher.getProjects( $("table.projects", this) );//.dataTable() );
+      
+      $(".message-close", this).click(function(){ $(this).parent().hide(); });
+      $("button.edit", this)
+        .button({icons: {primary: "ui-icon-tag"}, text: false})
+        .each(function(){ this.message = message; this.grapher = grapher; this.table = table; this.action = "openProject"; })
+        .click(fclick); 
+
+      $("button.delete", this)
+        .button({icons: {primary: "ui-icon-trash"}, text: false})
+        .each(function(){ this.message = message; this.grapher = grapher; this.table = table; this.action = "deleteProject"; })
+        .click(fclick); 
+    } 
+  });
+]]></Script>
+</Fragment>
+
+
+
+<Fragment id="openFiles">
+<Interface><![CDATA[
+  <div class="openFiles">
+    <div id="message" class="ui-state-highlight ui-corner-all" style="margin-top: 0px; padding:.2em; display: none;">
+      <span class="ui-icon ui-icon-close message-close" style="cursor:pointer; display:inline-block;float: right" alt="Close"></span>
+      <span class="ui-icon ui-icon-info" style="float: left; margin-right: .3em;"></span>
+      <strong>Alert:</strong> <span id="text"></span>
+    </div>
+    <nav>
+       <input type="text" name="alias" value="" placeholder="Name[.xml]" style="width:110px;padding:2px;"/>
+       <button id="new-file" style="cursor:pointer;">New</button><button id="help" style="cursor:pointer;">Help</button>
+    </nav>
+    <table cellpadding="0" cellspacing="0" border="0" class="files">
+    </table>
+  </div>  
+]]></Interface>
+<Script arguments="interface, psi"><![CDATA[
+  var cols = [{sTitle: "File", sClass: "file"}, {sClass: "button", asSorting: false}],
+      table = $("table.files", interface).dataTable( $.extend({aoColumns: cols},tableDef) );
+  $("table.files,button#new-file", interface).attr("file-type", psi.ftype);
+  //Crear botón nuevo
+  $(".message-close", interface).click(function(){ $(this).parent().hide(); });
+  $("button#new-file", interface)
+    .click(function(){
+      try {
+        var ftype = $(this).attr("file-type"), 
+            fileName = $(this).siblings("input[name=alias]").val();
+        
+        if (fileName.length>0 && fileName.toLowerCase().indexOf(".xml")>0 && GrapherApp.current!=null){
+          GrapherApp.newFile(ftype, fileName);
+          this.table.fnAddData( GrapherApp._rowFile(fileName) );
+          GrapherApp._bindEventsFile(this.table);  
+          GrapherApp.editFile(ftype, fileName); 
+          this.message.hide();
+        }
+        else {
+          this.message.removeClass("ui-state-error").show();
+          var mess = GrapherApp.current==null ? "There is no open project" : "Typing filename *.xml";
+          this.message.find("#text").text( mess ); 
+        }
+      }
+      catch(e) { 
+        this.message.addClass("ui-state-error").show();
+        this.message.find("#text").text(e.toString()); 
+      }
+    })
+    .each(function(){ 
+       this.message = $("div#message", interface); 
+       this.table = table; 
+    });
+    
+    
+]]></Script>
+</Fragment>
+
+ 
+  
+<Fragment id="sourceSVG">
+<Interface><![CDATA[
+  <div>
+    <nav>
+       <button id="source-btn">Refrecar</button>
+    </nav>
+    <textarea class="text-source"></textarea>
+  </div> 
+]]></Interface>
+<Script arguments="interface, psi"><![CDATA[
+  $("#source-btn",interface)
+    .button({icons: { primary: "ui-icon-refresh" }})
+    .click(function(){ 
+       $(this).parent().sibling("textarea").val( GrapherApp.manager.svggen.toSVG() ); 
+    });
+  interface.find("textarea").val( GrapherApp.manager.svggen.toSVG() );
+  interface.toolbar({
+    title: "Fuente SVG", 
+    width: 800,
+    close: function() { 
+      //$(this).dialog("destroy");
+      $(this).remove();
+    }
+  }); 
+]]></Script>
+</Fragment>
+  
+</Template>

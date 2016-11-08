@@ -1,0 +1,206 @@
+﻿<style>
+  .description { min-width: 800px; max-width: 1000px; text-align: left; display:inline-block; }
+  .description > header { padding: 0 5em; }
+  .description h1 { font-size: 1.2em; border-bottom: 1px solid #f0f0f0; }
+  .description h2 { font-size: 1.1em; padding: .2em .4em; background-color: #fafafa; }
+  .description table.commands { width: 100%; }
+  .description th { border-bottom: 1px solid #f0f0f0; color: gray; }
+  .description .command { font-weight: bold; vertical-align: top; white-space: nowrap; }
+  
+  
+  .description .content { font-size: 14px; padding: 0 20px 0 0; }
+  .description .content h1 { font-size: 1.3em; padding: .4em 0; border-bottom: 1px solid #f0f0f0; text-align:center; }
+  .description .content h2 { font-size: 1.1em; padding: .2em 0; background-color: #fafafa; }
+  .description .content figcaption { font-size: 0.9em; text-align: center; }
+  .description .content .dgl { text-align: center; }
+  .description .index { width: 150px; vertical-align: top; border-left: 1px solid #f0f0f0; padding-left: 10px;}
+  
+  .text-description { }
+  .table-content {-webkit-padding-start: 20px;}
+</style>
+
+<main class="description">
+  <table cellpadding="5" style="width:100%">
+    <tr>
+      <td class="content">
+        <h1>GraphsPsi Language and PaintPsi Languages Description</h1>
+        <p>
+          El objetivo se centra en crear y visualizar un <b>diagrama</b> (incluye como sinónimos creación modelos gráficos,
+          bocetos, pinturas, gráficos, etc.) donde su apariencia y contenido dependan de fuentes de información XML. Se usara
+          los gráficos vectoriales redimensiónales SVG [W3C, 2011] como parte de la solución.
+        </p>
+        <section id="fd-design">
+          <h2>1. Analysis and design</h2>
+          <p>
+            En la Figure 1 se muestra las partes que intervienen para la creación y visualización de un diagrama: la <b>librería gráfica</b>, 
+            las <b>fuentes de información</b> y la <b>diagramación</b>. La librería gráfica tiene como objetivo definir elementos
+            gráficos basados en elementos SVG, que sean manipulables, transformables y reutilizables. Las fuentes de información
+            son los ficheros de datos XML asociados al diagrama y median en su apariencia y contenido. Por último, la diagramación
+            es la representación gráfica del diagrama con elementos SVG a partir de la librería gráfica y las fuentes de información,
+            ésta representación se hace directamente sobre un lienzo SVG (elemento svg de SVG).
+          </p>
+          <p>
+            La creación de un diagrama se basa a partir del concepto de definición gráfica. Para nuestro marco de trabajo, una definición
+            gráfica es la abstracción del diagrama a partir de dos elementos gráficos: figura y línea. Un elemento gráfico define una
+            plantilla o esqueleto de elementos SVG. En decir, la figura es la agrupación de elementos SVG como: rect, circle, ellipse,
+            line, polyline, polygon, text, path, etc. Mientras que una línea es un elemento SVG: line, polyline o path. Además, a un
+            elemento gráfico se puede especificar: cuáles son sus elementos SVG modificables (modificación de texto, de imágenes y de
+            estilo) y cuáles son sus elementos SVG que intervienen en su comportamiento (arrastre, visualización, tamaño y rotación),
+            como se muestra en la Figure 1.
+          </p>
+          <figure>
+            <img src="images/Figure1.png" class="figure1" width="600" alt="Design of a web application">
+            <figcaption>Figura 1. Creación y visualización de figuras y líneas basadas en el concepto de definición gráfica..</figcaption>
+          </figure>
+          <p>
+            En la Figure 1 el elemento Objeto está conformada por: una imagen, un texto y un círculo. Cuando se crea una instancia del
+            elemento Objeto se modifica la imagen, el texto y se da un estilo de círculo (cambiar color de relleno y color de contorno).
+            Esta modificación puede provenir de procesar la información externa al diagrama, es decir, de procesar fuentes de información XML.
+            En este entorno, “instanciar” un elemento gráfico es clonar todos los elementos SVG de la libreria y dar una ubicación visible
+            dentro de un lienzo SVG. Por otra parte, en la Figure 1 el elemento Flecha está conformado por: el tipo de línea y los
+            marcadores inicial y final (obtenidos de Defs). Al igual que el elemento Objeto, estos elementos pueden ser modificados por
+            las fuentes de información XML.
+          </p>
+          <p>
+            En consecuencia, para cumplir el objetivo de crear y visualizar diagramas asociando fuentes de información XML, se plantean
+            crear dos componentes Psi: componente <b>Graphs</b> y componente <b>Paint</b>, y hacer uso del PsiXML y de la metodología de implementación
+            de lenguajes Psi de la sección anterior. El componente Graphs implementa el lenguaje <b>GraphsPsi</b>, este lenguaje administra los
+            elementos gráficos de la librería gráfica. Y el componente Paint implementa el lenguaje <b>PaintPsi</b> encargado de la diagramación
+            a partir de librerías gráficas, con la posibilidad de asociar de información XML. En las próximas secciones se resumirá la
+            implementación de estas dos componentes.
+          </p>
+        </section>
+
+
+        <section id="fd-graphs">
+          <h2>2. Componente Graphs</h2>
+          <h3>Gramática GraphsPsi</h3>
+          <p>
+            El <b>lenguaje GraphsPsi</b> administra los elementos gráficos de la librería gráfica definiendo las siguientes etiquetas: 
+            <b>GraphsPsi</b>, <b>Defs</b>, <b>Shape</b>, <b>Path</b> y <b>Make</b>. En la Figure 2 se muestra el diagrama de estructura del 
+            lenguaje GraphsPsi, y en la Figure 3 se muestra la validación de atributos de la gramática GraphsPsi.
+          </p>
+          <figure>
+            <div id="graphs-grammar-diagram" class="dgl">
+              <img src="../images/loading.gif" alt="Loading ..." /> <b>Loading diagram ...</b>
+            </div>
+            <script type="text/javascript">
+              $(function () {
+                setTimeout(function () {
+                  $("#graphs-grammar-diagram")
+                    .empty()
+                    .visorPsi({
+                      acronym: "grapher",
+                      url: "/PsiXML/source/models/diagram/grapher/grammar-graphs.dgl.xml"
+                    });
+                }, 500);  
+              });
+            </script>
+            <figcaption>Figure 2. PsiLSD para el lenguaje <b>GraphsPsi</b>.</figcaption>
+          </figure>
+          <p>
+            Según Figure 2, la etiqueta raíz <b>GraphsPsi</b> es el punto de partida para la definición de la librería gráfica. 
+            Tiene un alias (atributo <i>alias</i>) y es opcional. Además, contiene las etiquetas:
+            <ol>
+              <li>
+                Etiqueta <b>Defs</b> (opcional): contiene las definiciones de SVG como símbolos, marcas, estilos, etc. Tiene un
+                identificador (atributo <i>id</i>) para cada definición SVG.
+              </li>	
+              <li>
+                Etiqueta <b>Shape</b> (opcional, múltiple): define una figura mediante un conjunto de elementos gráficos SVG (rect,
+                circle, ellipse, line, polyline, polygon, text, path, etc.). Tiene un identificador (atributo <i>id</i>) y un selector
+                de arrastre (atributo <i>drag-selector</i>) que delega a uno más elementos gráficos el movimiento de la figura. Además,
+                el atributo defs lista las definiciones SVG y el atributo class se usa para dar estilo CSS que la figura
+                requiera.
+              <li>
+                Etiqueta <b>Path</b> (opcional, múltiple): define una línea con una de las etiquetas SVG: line, polyline o path. Tiene
+                un identificador (atributo <i>id</i>) y un selector de arrastre (atributo <i>drag-selector</i>) para dar movimiento a la línea.
+                El atributo <i>defs</i> y <i>class</i> funcionan de manera análoga que la etiqueta <b>Shape</b>.
+              </li>
+            </ol>
+          </p>
+          <div id="graphs-grammar-table" class="grammar-table">
+            <img src="../images/loading.gif" alt="Loading ..." /> <b>Loading table ...</b>
+          </div>
+          <script type="text/javascript">
+            $(function () {
+              setTimeout(function () {
+                var params = { componentId: "graphs_component", caption: "Tabla 1. Psi Grammar Validator Attributes of the GraphsPsi Language" },
+                    content = DocsPsi.transform("grapher", { alias: "psi-grammar", params: params });
+                $("#graphs-grammar-table").empty().append(content);
+              }, 600);
+            });
+          </script>
+        
+          <h3>Classes diagram</h3>
+          <p>
+            El componente Graphs implementa la funcionalidad asociada al lenguaje GrapsPsi. En la Figure 3 se muestra el diagrama de clases 
+            de este componente. Por facilidad,  la clase asociada a cada etiqueta tiene el mismo nombre, por ejemplo, la etiqueta Shape tiene 
+            la clase Shape. Cabe mencionar que las clases GraphsPsi, Base, Defs y Make heredan de la clase base del PsiXML (clase abstracta 
+            PsiElement).
+          </p>
+          <p>
+            El componente Graphs, cuando se inicializa crea tres clasificadores en PsiData del EnginePsi: “shape”, “path” y “defs”. En cada 
+            uno de ellos se almacenará y se pondrá a disposición las figuras, las líneas y las definiciones SVG, respectivamente.
+            Según la Figure 3, la clase GraphsPsi administra las definiciones SVG, la lista de líneas  y la lista de figuras. La clase 
+            Defs registra todas sus definiciones SVG en PsiData.defs con su identificador.
+          </p>
+          <p>
+            La clase Base, administra el documento SVG del elemento gráfico (figura o línea) y registra su instancia según corresponda en 
+            PsiData. Crea la funcionalidad de arrastre con la ayuda del atributo drag-selector y le asocia el estilo de clases CSS con el 
+            atributo class. Además, tiene la capacidad de clonar los elementos SVG del documento para “instanciar” el elemento gráfico. Las 
+            clases Shape y Path heredan de la clase Base y tiene como objetivo personalizar la funcionalidad la funcionalidad de arrastre, 
+            escala y rotación. La clase Make crea la función de manipulación JavaScript de un elemento gráfico, su cuerpo está definida en 
+            el contenido de la etiqueta Make, está se ejecuta cuando se instancia una figura o una línea. 
+          </p>
+          <figure>
+            <div id="class-diagram-basic-graphs" class="dgl">
+              <img src="../images/loading.gif" alt="Loading ..." /> <b>Loading diagram ...</b>
+            </div>
+            <script type="text/javascript">
+              $(function () {
+                setTimeout(function () {
+                  $("#class-diagram-basic-graphs")
+                    .empty()
+                    .visorPsi({
+                      acronym: "grapher",
+                      url: "/PsiXML/source/models/diagram/grapher/basic-graphs.dgl.xml"
+                    });
+                }, 700);
+              });
+            </script>
+            <figcaption>Figure 3. Diagrama de clases del <b>Componente Graphs</b>.</figcaption>
+          </figure>
+        </section>
+
+        <section id="fd-running">
+          <h2>4. Running the FeedPsi web application</h2>
+          <p>
+            In order to show how the <b>Feed Component</b> runs together with the FeedPsi Language to implement the
+            <a href="/feedpsi"><b>FeedPsi Web Application</b></a>, we will show how it Works with the RSS source for the next journals: Bild,
+            Mirror, AS, La Gazzeta, L’Equipe y El Tiempo.
+          </p>
+          <p>
+            Thus, XML document shows the FeedPsi source code that implements the FeedPsi Web Application (the news 
+            aggregator). In order to create the web application, the Psi Interpreter uses jQuery User Interface , 
+            a visual component JavaScript library.
+          </p>
+          
+        </section>
+      </td>
+
+
+
+      <td class="index">
+        <h1>Table of contents</h1>
+        <ol class="table-content">
+          <li><a href="#fd-design">Analysis and design</a></li>
+          <li><a href="#fd-grammar">FeedPsi Grammar for FeedPsi Language</a></li>
+          <li><a href="#fd-diagram">Classes diagram for the Feed Component</a></li>
+          <li><a href="#fd-running">Running the FeedPsi web application</a></li>
+        </ol>
+      </td>
+    </tr>
+  </table>
+</main>
+

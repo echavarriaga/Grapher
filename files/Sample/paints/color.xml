@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?><PaintPsi xmlns:xlink="http://www.w3.org/1999/xlink">
+  <Script id="test"><![CDATA[
+    console.log(parent, context);
+
+  ]]></Script>
+
+  <Modify id="p1" y="20" scripts="test">
+    <Setting key="box" style="fill:#f00000"/>
+    <Setting key="name" text="{{p.name}}"/>
+  </Modify>
+</PaintPsi>

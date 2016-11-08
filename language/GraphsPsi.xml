@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ModelImplementationPsi>
+
+
+<Texts id="graphspsi_messages">
+  <Language key="ES" name="Spanish">
+    <Text key="SVG_DEFS_ERROR">Error cargando definiciones de SVG. Identificador '$1'</Text>
+    <Text key="SVG_DEFS_NOT_DEFINE">No hay definición '$1' SVG</Text>
+  </Language>
+</Texts>
+
+  
+<Class id="defs" arguments="">
+  <Validator element-key="defs" id="*identifier"/>
+  <Static name="map">{}</Static>
+  
+  <Event name="onInit" arguments=""><![CDATA[
+    // Obtener SVG de la definición 
+    var svg = $(this._ref).children("svg").get(0);
+    //Validar que la fuente no sea nula
+    if (svg==null) 
+      throw new PsiError("GRAPHSPSI.SVG_DEFS_ERROR", [this.id()], [this]);
+    //Registrar definiciones SVG
+    Defs.map[this.id()] = svg;
+    $("defs", svg).children().each(function() {
+      PsiData.defs.register($(this).attr("id"), $(this));
+    });
+  ]]></Event>
+</Class>
+
+
+<Class id="base" arguments="">
+  <Event name="onInit" arguments=""><![CDATA[
+    //Registrar elemento gráfico Psi
+    PsiData[this.type].register(this.id(), this);
+    // Obtener SVG de la definición 
+    this.svg = $(this._ref).children("svg").get(0);
+  ]]></Event>
+  
+  
+  <Method name="_initCreate" arguments="svgroot, graph, parent, ref" trycatch="false"><![CDATA[
+    //Crear referencias
+    graph._lib = this;
+    graph._ref = ref;
+    ref._lib = this;
+    $(graph).attr({"type": this.type});
+    if(this.hasAttr("class"))
+    	graph.setAttribute("class", this.attr("class"));
+    
+    //Adicionar definiciones  
+    var sdefs = this.attr("defs");
+    if (sdefs) {
+      var defs = sdefs.split(",");
+      for (var id in defs) {
+        var def = PsiData.defs.get( defs[id] );
+        if (def && $("defs", svgroot).find("#"+defs[id]).length==0) 
+          $("defs", svgroot).append( def.clone(true) );
+      }
+    }  
+    
+    //Definir traslación del elemento gráfico Psi
+    ref._translate = graph.ownerSVGElement.createSVGTransform();
+    graph.transform.baseVal.appendItem(ref._translate);
+    ref._translate.setTranslate(0, 0);
+    
+    //Definir escala del elemento gráfico Psi
+    ref._scale = graph.ownerSVGElement.createSVGTransform();
+    graph.transform.baseVal.appendItem(ref._scale);
+    ref._scale.setScale(1, 1);
+    
+    //Definir escala del elemento gráfico Psi
+    ref._rotate = graph.ownerSVGElement.createSVGTransform();
+    graph.transform.baseVal.appendItem(ref._rotate);
+    ref._rotate.setRotate(0,0,0); 
+  ]]></Method>
+  
+  <Method name="cloneSVG" arguments="" trycatch="false"><![CDATA[
+    return $(this.svg).children().clone(true);
+  ]]></Method>
+</Class>
+  
+  
+<Class id="shape" arguments="">
+  <Validator element-key="shape" id="*identifier" drag-selector="*text"/>
+  <Property name="type" default="GraphType.Shape"/>
+  <Property name="make" default="null"/>
+  
+  <Method name="_bindDrag" arguments="shapesvg, ref"><![CDATA[
+    var selector = this.attr("drag-selector");
+    if (selector) {
+      $(selector, shapesvg)
+        .drag("start", function(event, dd) {
+          //Establecer inicio de movimiento
+          this._start = createPoint(this.ownerSVGElement, this._ref._translate.matrix.e, this._ref._translate.matrix.f);
+          this._current = createPoint(this.ownerSVGElement, dd.deltaX, dd.deltaY);
+        })
+        .drag(function(event, dd) {
+          this.move(event, dd);
+        })
+        .drag("end", function(event, dd) {
+          this.move(event, dd);
+        })
+        .each(function(){
+          this._ref = ref; 
+          //Función para mover elemento gráfico Psi
+          this.move = function(event, dd){
+            this._current.set(dd.deltaX, dd.deltaY).plus(this._start);
+            this._ref.translate(this._current);
+          };
+        });
+    }
+  ]]></Method>
+  
+  <Method name="create" arguments="svggen, id, parent, ref"><![CDATA[
+    var shape = svggen.group(parent, id);
+    
+    //Iniciar elemento gráfico
+    this._initCreate(svggen.root(), shape, parent, ref);
+    svggen.add(shape, this.cloneSVG());
+    
+    //Enlazar eventos a la figura
+    this._bindDrag(shape, ref);
+    return shape;
+  ]]></Method>
+</Class>
+
+
+<Class id="path" arguments="">
+  <Validator element-key="path" id="*identifier" key-line="*identifier" drag-selector="text"/>
+  <Property name="type" default="GraphType.Path"/>
+  <Property name="make" default="null"/>
+  
+  
+  <Method name="_bindDrag" arguments="pathsvg, ref"><![CDATA[
+    var selector = this.attr("drag-selector");
+    if (selector) {
+      $(selector, pathsvg)
+        .drag("start", function(event, dd) {
+          //Establecer inicio de movimiento
+          this._start = this._ref.start();
+          this._current = createPoint(this.ownerSVGElement, dd.deltaX, dd.deltaY);
+        })
+        .drag(function(event, dd) {
+          this.move(event, dd);
+        })
+        .drag("end", function(event, dd) {
+          this.move(event, dd);
+        })
+        .each(function(){
+          this._ref = ref; 
+          //Función para mover elemento gráfico Psi
+          this.move = function(event, dd){
+            this._current.set(dd.deltaX, dd.deltaY).plus(this._start);
+            this._ref.translate(this._current);
+          };
+        });
+    }
+  ]]></Method>
+  
+  <Method name="create" arguments="svggen, id, parent, ref"><![CDATA[
+    var svgroot = svggen.root(),
+        path = svggen.group(parent, id);
+    
+    //Establecer translación, rotación y escala
+    this._initCreate(svgroot, path, parent, ref);
+    svggen.add(path, this.cloneSVG());
+    ref._line = $("[key="+this.attr("key-line")+"]", path).get(0);
+    
+    //Enlazar eventos a la figura
+    this._bindDrag(path, ref);
+    return path;
+  ]]></Method>
+</Class>
+  
+  
+  
+<Class id="make" arguments="">
+  <Event name="onInit" arguments=""><![CDATA[
+    // Obtener SVG de la definición 
+    this.svg = this.parent.svg;
+  ]]></Event>
+</Class>
+ 
+  
+  
+<Class id="graphspsi" arguments="">
+  <Validator element-key="graphspsi" alias="*text"/>
+  <Property name="defs" default="null"/>
+  <Property name="shapes" default="{}"/>
+  <Property name="paths" default="{}"/>
+  
+  <Event name="onInit" arguments=""><![CDATA[
+    this.alias = this.attr("alias");
+  ]]></Event>
+</Class>
+
+  
+<Parser id="graphspsi_parser" arguments="">
+</Parser>
+
+<ComponentPsi id="graphs_component">
+  <Initialize name="InitGraphs"><![CDATA[
+    //Registrar elementos Psi
+    PsiData.register(GraphType.Shape);
+    PsiData.register(GraphType.Path);
+    PsiData.register("defs");
+  ]]></Initialize>
+</ComponentPsi>
+
+
+</ModelImplementationPsi>

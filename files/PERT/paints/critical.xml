@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PaintPsi xmlns:xlink="http://www.w3.org/1999/xlink">
+  <Modify id="n0" class="critical"/>
+  <Modify id="nD" class="critical"/>
+  <Modify id="n0-nD" class="critical"/>
+  <Modify id="nE" class="critical"/>
+  <Modify id="nD-nE" class="critical"/>
+  <Modify id="nH" class="critical"/>
+  <Modify id="nE-nH" class="critical"/>
+
+  <Modify id="nI" class="critical"/>
+  <Modify id="n0-nI" class="critical"/>
+
+  <Modify id="n1" class="critical"/>
+  <Modify id="nH-n1" class="critical"/>
+  <Modify id="nI-n1" class="critical"/>
+</PaintPsi>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?><Database alias="db">
+  <People>
+    <Person id="1" name="Évariste Galöis"/>
+    <Person id="2" name="Carl Friedrich Gauss"/>
+  </People>
+  <Sites>
+    <Site id="1" name="House"/>
+    <Site id="2" name="University"/>
+    <Site id="3" name="Work"/>
+  </Sites>
+</Database>

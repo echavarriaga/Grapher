@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ModelImplementationPsi>
+
+
+<Texts id="paintpsi_messages">
+  <Language key="ES" name="Spanish">
+    <Text key="GRAPH_ERROR">Error creando '$1' Psi. No existe Identificador='$2'</Text>
+    <Text key="FIGURE_SETTING_ERROR">Error figura Psi '$1' NO existe SettingKey='$2'</Text>
+    <Text key="DEBUG_INCLUDE_EXIST">Ya existe documento XML con alias '$1'. No se incluirá nuevamente</Text>
+    <Text key="DEBUG_INCLUDE_REGISTER">Cargando documento XML con alias '$1'</Text>
+  </Language>
+</Texts>
+
+  
+<Class id="include" arguments="">
+  <Validator element-key="include" alias="*text" url="*text"/>
+  
+  <Event name="onInit" arguments=""><![CDATA[
+    this.alias = this.attr("alias");
+    if (PsiData.document.exist(this.alias)) {
+      PSIDEBUG("PAINTPSI.DEBUG_INCLUDE_EXIST", [this.alias]);
+      return;
+    }
+    PSIDEBUG("PAINTPSI.DEBUG_INCLUDE_REGISTER", [this.alias]);
+    PsiData.document.register(this.alias, this.attr("url"), this.attr("data"), this.attr("action"));
+    this.document = PsiData.document.get(this.alias);
+  ]]></Event>
+</Class>
+  
+  
+<Class id="setting" arguments="">
+  <Validator element-key="setting" key="*identifier"/>
+  
+  <Event name="onInit" arguments=""><![CDATA[
+    this.key = this.attr("key");
+    if ($(this.parent._svg).find("[key="+this.key+"]").length!=1)
+      throw new PsiError("PAINTPSI.FIGURE_SETTING_ERROR", [this.parent.id(), this.key], [this]);
+    this._svg = $(this.parent._svg).find("[key="+this.key+"]").get(0);
+  ]]></Event>
+  
+  <Method name="apply" arguments=""><![CDATA[
+    for(var i=0; i<this._ref.attributes.length; i++){
+      var attr = this._ref.attributes[i]; 
+      switch(attr.name) {
+        case "key": break;
+        case "text": $(this._svg).text( this.parent.processValue(attr.value) ); break; 
+        default: this._svg.setAttribute(attr.name,this.parent.processValue(attr.value)); break;  
+      }
+    }
+  ]]></Method>
+</Class>
+  
+  
+
+<Class id="layer" arguments="">
+  <Validator element-key="layer" id="*identifier"/>
+  <Property name="figures" default="{}"/>
+  <Property name="lines" default="{}"/>
+  
+  <Event name="onInit" arguments=""><![CDATA[
+    this._svg = this.context.svggen.group(this.context.svgroot, this.id());
+    if(this.hasAttr("class"))
+    	this._svg.setAttribute("class", this.attr("class"));
+  ]]></Event>
+</Class>
+
+  
+  
+<Class id="base" arguments="">
+  <Event name="onInit" arguments=""><![CDATA[
+    var type = this._elementType, 
+        def = PsiData[type].get( this.attr(type) );  
+    if (def == null)
+      throw new PsiError("PAINTPSI.GRAPH_ERROR", [this.attr(type), this.id()], [this]);
+    this._svg = def.create(this.context.svggen, this.id(), this.parent._svg, this);
+  ]]></Event>
+  
+  <Event name="onChildrenCreated" arguments=""><![CDATA[
+    this.refresh();
+  ]]></Event>
+  
+  <Event name="onRemove" arguments="self"><![CDATA[
+    $(this._svg).remove();
+  ]]></Event>
+
+  <Method name="applySettings" arguments=""><![CDATA[
+    for(var key in this.settings)
+      this.settings[key].apply();
+  ]]></Method>
+  
+  <Method name="resize" arguments="scale"><![CDATA[
+    var s = scale.split(",");
+    this.attr("scale", scale);
+    this._scale.angle = this._rotate.angle;
+    this._scale.setScale(parseFloat(s[0]), s.length==2 ? parseFloat(s[1]):1); 
+  ]]></Method>
+  
+  <Method name="rotate" arguments="angle"><![CDATA[
+    var box = this._svg.getBBox();
+    this._rotate.setRotate(Math.round(angle), box.x+box.width/2, box.y+box.height/2); 
+  ]]></Method>
+  
+  <Method name="position" arguments=""><![CDATA[
+    var ctm = this._svg.getCTM();
+    return createPoint(this.context.svgroot, ctm.e, ctm.f); 
+  ]]></Method>
+</Class>  
+
+
+  
+<Class id="figure" arguments="">
+  <Validator element-key="figure" id="*identifier" shape="*identifier" x="*number" y="*number" scale="=1,1|text" angle="=0|number"/>
+  <Property name="_elementType" default="GraphType.Shape"/>
+  <Property name="settings" default="{}"/>
+  
+  <Method name="translate" arguments="_x, _y"><![CDATA[
+    var x = Math.round( typeof _x=="number" ? _x : _x.x ),
+        y = Math.round( typeof _x=="number" ? _y : _x.y );
+    this._translate.setTranslate(this.attr("x", Math.round(x)), this.attr("y", Math.round(y))); 
+  ]]></Method>
+  
+  <Method name="width" arguments=""><![CDATA[
+    return this._svg.getBBox().width;
+  ]]></Method>
+  
+  <Method name="height" arguments=""><![CDATA[
+    return this._svg.getBBox().height;
+  ]]></Method>
+  
+  <Method name="refresh" arguments=""><![CDATA[
+    this.translate(this.attr("x"), this.attr("y"));
+    if (this.hasAttr("angle")) 
+      this.rotate(this.attr("angle"));
+    if (this.hasAttr("scale")) 
+      this.resize(this.attr("scale"));
+    this.applySettings();
+  ]]></Method>
+</Class>
+
+
+<Class id="line" arguments="">
+  <Validator element-key="line" id="*identifier" path="*identifier" start="*text" end="*text" scale="=1,1|text" angle="=0|number"/>
+  <Property name="_elementType" default="GraphType.Path"/>
+  <Property name="settings" default="{}"/>
+  
+  <Method name="start" arguments="x, y"><![CDATA[
+    var s = this.attr("start").split(",");
+    return createPoint(this._svg.ownerSVGElement, parseInt(s[0]), parseInt(s[1]));
+  ]]></Method>
+  
+  <Method name="end" arguments=""><![CDATA[
+    var s = this.attr("end").split(",");
+    return createPoint(this._svg.ownerSVGElement, parseInt(s[0]), parseInt(s[1]));
+  ]]></Method>
+  
+  <Method name="translate" arguments="_x, _y"><![CDATA[
+    var x = Math.round( typeof _x=="number" ? _x : _x.x ),
+        y = Math.round( typeof _x=="number" ? _y : _x.y ),
+        delta = this.start().minus( createPoint(this._svg.ownerSVGElement, x, y) ),
+        end = this.end().minus(delta);
+    switch(this._line.tagName){
+      case "line": 
+        $(this._line).attr({x1: x, y1: y, x2: end.x, y2: end.y});
+        break;
+    }
+    this.attr("start", x+","+y);
+    this.attr("end", end.x+","+end.y);
+  ]]></Method>
+  
+  <Method name="refresh" arguments=""><![CDATA[
+    this.translate(this.start());
+    if (this.hasAttr("angle")) 
+      this.rotate(this.attr("angle"));
+    if (this.hasAttr("scale")) 
+      this.resize(this.attr("scale"));
+    this.applySettings();
+  ]]></Method>
+</Class>
+  
+  
+<Class id="paintpsi" arguments="">
+  <Validator element-key="paintpsi" width="number" height="number"/>
+  <Property name="includes" default="{}"/>
+  <Property name="scripts" default="{}"/>
+  <Property name="layers" default="{}"/>
+  
+  <Event name="onInit" arguments=""><![CDATA[
+    var w = this.attr("width"), h = this.attr("width"); 
+    if (w && h) {
+      $(this.context.svgroot).attr( {width: w, height: h} );
+      this.context.svgroot.setAttribute("viewBox", "0 0 "+w+" "+h);
+    }
+  ]]></Event>
+</Class>
+
+  
+<Parser id="paintpsi_parser" arguments="">
+</Parser>
+
+<ComponentPsi id="paint_component">
+  <Initialize name="InitPaintPsi"><![CDATA[
+  ]]></Initialize>
+</ComponentPsi>
+
+
+</ModelImplementationPsi>

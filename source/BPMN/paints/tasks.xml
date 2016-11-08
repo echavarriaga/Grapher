@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?><PaintPsi xmlns:xlink="http://www.w3.org/1999/xlink" width="800" height="600">
+  <Layer id="tasks" class="bpm">
+    <Figure id="tasks-group" x="20" y="20" shape="bpm-group">
+      <Setting key="title" text="Tasks" x="200"/>
+      <Setting key="box" href="#" width="400" height="400"/>
+    </Figure>
+    <Figure id="task-none" x="50" y="60" shape="bpm-task">
+      <Setting key="name" text="None"/>
+      <Setting key="type" href="#"/>
+    </Figure>
+    <Figure id="task-service" x="240" y="60" shape="bpm-task">
+      <Setting key="name" text="Service"/>
+      <Setting key="type" href="#bpm-task-service"/>
+    </Figure>
+    <Figure id="task-receive" x="50" y="130" shape="bpm-task">
+      <Setting key="name" text="Receive"/>
+      <Setting key="type" href="#bpm-task-receive"/>
+    </Figure>
+    <Figure id="task-send" x="240" y="130" shape="bpm-task">
+      <Setting key="name" text="Send"/>
+      <Setting key="type" href="#bpm-task-send"/>
+    </Figure>
+    <Figure id="task-user" x="50" y="200" shape="bpm-task">
+      <Setting key="name" text="User"/>
+      <Setting key="type" href="#bpm-task-user"/>
+    </Figure>
+    <Figure id="task-group" x="240" y="200" shape="bpm-task">
+      <Setting key="name" text="Group"/>
+      <Setting key="type" href="#bpm-task-group"/>
+    </Figure>
+    <Figure id="task-manual" x="50" y="270" shape="bpm-task">
+      <Setting key="name" text="Manual"/>
+      <Setting key="type" href="#bpm-task-manual"/>
+    </Figure>
+    <Figure id="task-rules" x="240" y="270" shape="bpm-task">
+      <Setting key="name" text="Rules"/>
+      <Setting key="type" href="#bpm-task-rules"/>
+    </Figure>
+    <Figure id="task-script" x="50" y="340" shape="bpm-task">
+      <Setting key="name" text="Script"/>
+      <Setting key="type" href="#bpm-task-script"/>
+    </Figure>
+  </Layer>
+
+  <Layer id="tasks-marker" class="bpm">
+    <Figure id="tasks-marker-group" x="440" y="20" shape="bpm-group">
+      <Setting key="title" text="Tasks Markers" x="105"/>
+      <Setting key="box" href="#" width="210" height="400"/>
+    </Figure>
+    <Figure id="task-marker-none" x="470" y="60" shape="bpm-task">
+      <Setting key="name" text="Ad-hoc"/>
+      <Setting key="marker" href="#bpm-marker-ad-hoc"/>
+    </Figure>
+    <Figure id="task-marker-loop" x="470" y="130" shape="bpm-task">
+      <Setting key="name" text="Loop"/>
+      <Setting key="marker" href="#bpm-marker-loop"/>
+    </Figure>
+    <Figure id="task-marker-multi-instance" x="470" y="200" shape="bpm-task">
+      <Setting key="name" text="Multi Instance"/>
+      <Setting key="marker" href="#bpm-marker-multi-instance"/>
+    </Figure>
+    <Figure id="task-marker-compensation" x="470" y="270" shape="bpm-task">
+      <Setting key="name" text="Compensation"/>
+      <Setting key="marker" href="#bpm-marker-compensation"/>
+    </Figure>
+  </Layer>
+</PaintPsi>
