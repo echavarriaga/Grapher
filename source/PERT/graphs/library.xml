@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?><PsiGraphs alias="pert">
+  
+  <Defs id="pert-defs">
+    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1">
+      <defs>
+        <marker id="marker-circle" refY="50" refX="50" markerHeight="8" markerWidth="8" viewBox="0 0 100 100" orient="auto" markerUnits="strokeWidth">
+          <circle stroke-width="10" stroke="gray" fill="white" cy="50" cx="50" r="30"/>
+        </marker>
+        <marker id="marker-circle-red" refY="50" refX="50" markerHeight="8" markerWidth="8" viewBox="0 0 100 100" orient="auto" markerUnits="strokeWidth">
+          <circle stroke-width="10" stroke="#bf0000" fill="#f5cccc" cy="50" cx="50" r="30"/>
+        </marker>
+        <marker id="marker-circle-green" refY="50" refX="50" markerHeight="8" markerWidth="8" viewBox="0 0 100 100" orient="auto" markerUnits="strokeWidth">
+          <circle stroke-width="10" stroke="#007f00" fill="#baffba" cy="50" cx="50" r="30"/>
+        </marker>
+        <marker id="marker-rightarrow" refY="50" refX="50" markerHeight="8" markerWidth="8" viewBox="0 0 100 100" orient="auto" markerUnits="strokeWidth">
+          <path stroke-width="10" stroke="gray" fill="gray" d="m100,50l-100,40l30,-40l-30,-40z"/>
+        </marker>
+        <marker id="marker-rightarrow-red" refY="50" refX="50" markerHeight="8" markerWidth="8" viewBox="0 0 100 100" orient="auto" markerUnits="strokeWidth">
+          <path stroke-width="10" stroke="#bf0000" fill="#bf0000" d="m100,50l-100,40l30,-40l-30,-40z"/>
+        </marker>
+        <marker id="marker-rightarrow-green" refY="50" refX="50" markerHeight="8" markerWidth="8" viewBox="0 0 100 100" orient="auto" markerUnits="strokeWidth">
+          <path stroke-width="10" stroke="#007f00" fill="#007f00" d="m100,50l-100,40l30,-40l-30,-40z"/>
+        </marker>
+        
+        <style id="pert-styles" type="text/css"><![CDATA[
+          .pert { font-family: arial; font-size: 12px; border: solid 1px #f0f0f0; }
+          .pert .header-title { text-anchor: middle; font-size: 1.2em; font-weight: bold; }
+					.pert .header-subtitle { text-anchor: middle; font-size: 0.8em; font-weight: bold; fill: gray; }
+          .pert .box { fill: #fcfcfc; stroke: #f0f0f0; stroke-width: .8px; }
+          .pert .body { fill: #fcfcfc; stroke: #f0f0f0; stroke-width: .8px; }
+          .pert .drag, .pert .submenu, .pert .button { cursor: pointer; }
+
+          .pert .extreme {} 
+          .pert .extreme .label { text-anchor:middle; font-weight: bold; }
+          .pert .extreme .start { stroke:gray; stroke-width:1.2px; fill: #ffffb9; }
+          .pert .extreme .end { stroke:gray; stroke-width:1.2px; fill: #a4b2ff; }
+            
+          .pert .activity .label { text-anchor:middle; }
+          .pert .activity .circle { stroke:gray; stroke-width:.8px; fill: #f0f0f0; }
+          .pert .activity .duration { text-anchor: middle; font-size: 1em; font-weight: bold; }
+          .pert .activity .slack { font-size: 0.8em; fill: gray; }
+
+          .pert .critical .circle,
+          .pert .critical .start,
+          .pert .critical .end { stroke:#bf0000; stroke-width:1.3px; fill: #f5cccc; }
+          .pert .critical .label { text-anchor:middle; font-weight: bold; fill: #bf0000; }
+          .pert .critical .duration { text-anchor: middle; font-size: 1em; font-weight: bold; fill: #bf0000; }
+          .pert .critical .slack { font-size: 0.8em; fill: #bf0000; }
+
+          .pert .route .circle,
+          .pert .route .start,
+          .pert .route .end { stroke:#007f00; stroke-width:1.3px; fill: #baffba; }
+          .pert .route .label { text-anchor:middle; font-weight: bold; fill: #007f00; }
+          .pert .route .duration { text-anchor: middle; font-size: 1em; font-weight: bold; fill: #007f00; }
+          .pert .route .slack { font-size: 0.8em; fill: #007f00; }
+
+          .pert .arrow .line { stroke:gray; stroke-width:1.2px; fill: none; marker-start: url(#marker-circle); marker-end: url(#marker-rightarrow); }
+          .pert .critical .line { stroke:#bf0000; stroke-width:1.2px; fill: none; marker-start: url(#marker-circle-red); marker-end: url(#marker-rightarrow-red); }
+          .pert .route .line { stroke:#007f00; stroke-width:1.2px; fill: none; marker-start: url(#marker-circle-green); marker-end: url(#marker-rightarrow-green); }
+        ]]></style>
+      </defs>
+    </svg>    
+  </Defs>
+  
+  <Shape id="framework" drag-selector=".drag" defs="pert-styles">
+    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1">
+      <g id="panel-diagram-header" transform="translate(3,3)">
+        <rect key="box" x="0" y="0" width="10" height="10" rx="4" ry="4" fill="#fcfcfc" class="box"/>
+        <text key="title" x="0" y="0" class="header-title">Title</text>
+        <text key="subtitle" x="0" y="0" class="header-subtitle">Subtitle</text>
+      </g>
+      <rect key="body" x="3" y="46" width="10" height="10" class="body"/>
+      <g key="legend" class="activity">
+        <rect key="legend-box" x="0" y="0" width="10" height="10" rx="4" ry="4" fill="#fcfcfc" class="box"/>
+        <text x="10" y="25" class="footer-label">Legends</text>
+        <text x="100" y="35" class="label" style="font-size: 0.8em;">Initial Node</text>
+        <circle key="start" cx="100" cy="18" r="8" fill="#ffffb9" stroke="gray" stroke-width="1px"/>
+        <text x="160" y="35" class="label" style="font-size: 0.8em;">Final Node</text>
+        <circle key="end" cx="160" cy="18" r="8" fill="#a4b2ff" stroke="gray" stroke-width="1px"/>
+        <g transform="translate(200,7) scale(0.7)">
+          <title>Activity description</title>
+          <text x="40" y="48" class="label" style="font-size:1.3em;">Activity</text>
+          <circle fill="#fcfcfc" class="circle" cx="40" cy="15" r="15"/>
+          <text class="duration" x="40" y="20" style="font-size:1.1em;"><title>Duration</title>DU</text>
+          <text x="55" y="5" class="slack" style="font-size:1.2em;"><title>Slack</title>FU</text>
+        </g>
+        <g id="labels" transform="translate(280,2)" style="font-size: 0.9em;">
+          <text x="0" y="16" class="footer-item">DU = Activity duration</text>
+          <text x="0" y="32" class="footer-item">FU = Slack activity</text>
+        </g>
+      </g>
+    </svg>
+  </Shape>
+  
+  <Shape id="extreme" drag-selector=".drag" defs="pert-styles" class="extreme">
+    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1">
+      <title key="alt">Inicio/Fin</title>
+      <circle key="circle" cx="30" cy="20" r="12"/>
+      <text key="label" x="30" y="45" class="label">Nodo X</text>
+    </svg>
+  </Shape>
+  
+  <Shape id="activity" drag-selector=".drag" defs="pert-styles" class="activity">
+    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1">
+      <title key="alt">Activity</title>
+      <circle key="circle" cx="40" cy="15" r="15"/>
+      <text key="label" x="40" y="45" class="drag label">Activity</text>
+      <text key="duration" class="drag duration" x="40" y="20"><title>Duration</title>DU</text>
+      <text key="slack" x="55" y="5" class="drag slack"><title>Slack</title>FU</text>
+    </svg>
+  </Shape>
+  
+  <Path id="arrow" key-line="line" class="arrow" defs="marker-circle,marker-rightarrow,marker-circle-red,marker-rightarrow-red,marker-circle-green,marker-rightarrow-green" drag-selector=".drag">
+    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1">
+      <title key="alt">Título</title>
+      <line key="line" x1="20" y1="20" x2="50" y2="50" class="drag line"/>
+    </svg>
+  </Path>
+  
+</PsiGraphs>

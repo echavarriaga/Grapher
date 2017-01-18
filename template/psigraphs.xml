@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PsiGraphs alias="sample">
+  <Defs id="…">
+    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+      <defs>
+        <!-- SVG definitions -->
+      </defs>
+    </svg>
+  </Defs>
+  <Shape id="…" drag-selector="…" defs="key1,key2,…">
+    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+      <!-- SVG graphics elements -->
+    </svg>
+  </Shape> ...
+  <Path id="…" key-line="…" class="pert" defs="key1,key2,…" drag-selector="…">
+    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+      <!-- SVG graphics elements -->
+    </svg>
+  </Path> ...
+</PsiGraphs>

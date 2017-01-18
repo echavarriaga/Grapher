@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?><PERT alias="pert">
+  <Configuration title="PERT Diagram - Chalet Construction" subtitle="Created by Enrique">
+    <ActivityColor start="#ffffe2" among="#fcfcfc" end="#f1e5ff"/>
+  </Configuration>
+  <Activities units="Días" style="full">
+    <Activity id="n0" type="start" label="Initial" alt="Home works"/>
+    <Activity id="nA" type="among" label="Fundation" alt="Fundation and walls" duration="10" slack="5" es="10" ef="3" ls="0" lf="5"/>
+    <Activity id="nB" type="among" label="Windows/Doors" alt="Glass windows, metal doors, etc." duration="13" slack="5" es="10" ef="3" ls="200" lf="5"/>
+    <Activity id="nC" type="among" label="Divers" alt="Divers" duration="8" slack="5" es="10" ef="3" ls="0" lf="5"/>
+    <Activity id="nD" type="among" label="Pool" alt="Pool" duration="21" slack="0" es="10" ef="3" ls="0" lf="5"/>
+    <Activity id="nE" type="among" label="Exterior" alt="Garden, facade, etc" duration="10" slack="0" es="10" ef="-4" ls="0" lf="5"/>
+    <Activity id="nF" type="among" label="Roofs" alt="Roofs" duration="7" slack="0" es="10" ef="3" ls="0" lf="5"/>
+    <Activity id="nG" type="among" label="Floors" alt="Marble floors, ceramic, etc." duration="16" slack="5" es="4" ef="3" ls="0" lf="-5"/>
+    <Activity id="nH" type="among" label="Paintings" alt="Interior and exterior painting" duration="14" slack="0" es="10" ef="-8" ls="17" lf="15"/>
+    <Activity id="nI" type="among" label="Sale" alt="Sale" duration="30" slack="0" es="10" ef="-3" ls="0" lf="-5"/>
+    <Activity id="nJ" type="among" label="Electricity" alt="Electricity" duration="7" slack="2" es="30" ef="6" ls="2" lf="5"/>
+    <Activity id="nK" type="among" label="Facade" alt="Fachada, y demás" duration="5" slack="5" es="23" ef="12" ls="69" lf="-123"/>
+    <Activity id="n1" type="end" label="Delivery" alt="Delivery chalet"/>
+  </Activities>
+  <Arrows style="line">
+    <Arrow id="n0-nA" from="n0" to="nA"/>
+    <Arrow id="n0-nD" from="n0" to="nD"/>
+    <Arrow id="n0-nI" from="n0" to="nI"/>
+    <Arrow id="nA-nB" from="nA" to="nB"/>
+    <Arrow id="nA-nC" from="nA" to="nC"/>
+    <Arrow id="nB-nF" from="nB" to="nF"/>
+    <Arrow id="nB-nG" from="nB" to="nG"/>
+    <Arrow id="nD-nE" from="nD" to="nE"/>
+    <Arrow id="nD-nK" from="nD" to="nK"/>
+    <Arrow id="nE-nH" from="nE" to="nH"/>
+    <Arrow id="nC-nH" from="nC" to="nH"/>
+    <Arrow id="nG-nJ" from="nG" to="nJ"/>
+    <Arrow id="nJ-nH" from="nJ" to="nH"/>
+    <Arrow id="nK-nG" from="nK" to="nG"/>
+    <Arrow id="nF-n1" from="nF" to="n1"/>
+    <Arrow id="nH-n1" from="nH" to="n1"/>
+    <Arrow id="nI-n1" from="nI" to="n1"/>
+  </Arrows>
+</PERT>

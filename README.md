@@ -7,8 +7,8 @@ content depends on XML data sources.
 The aim of this project is to look for how to create diagrams whose appearance and content depends on multiple heterogeneous XML and JSON information sources. 
 Psi languages (view [PsiEngine](http://hilas.ii.uam.es/api)) natively offer the way to access and manipulate information by means of the *PsiLI* and *PsiCA* microlanguages.
 
-In order to create diagrams we proposed two Psi languages: the **GraphsPsi** language responsible for defining graphics elements (figures and lines) and 
-the **PaintPsi** language in charge of painting the diagram. The GraphsPsi language is implemented by the Graphs component and the PaintPsi language is implemented 
+In order to create diagrams we proposed two Psi languages: the **PsiGraphs** language responsible for defining graphics elements (figures and lines) and 
+the **PsiPaint** language in charge of painting the diagram. The PsiGraphs language is implemented by the Graphs component and the PsiPaint language is implemented 
 in the Paint component. The design and implementation of **Graphs** and **Paint** components are used the steps in the previous section.
 
 ## 2. Analysis and design
@@ -34,15 +34,15 @@ Moreover, the *Arrow* element in Figure 1 consists of setting the line type and 
 modified by the information from XML or JSON sources.
 
 As a consequence, to specify and render diagrams by associating information sources we propose to use two Psi components, namely: **Graphs** and **Paint**. The **Graphs** 
-component implements the *GraphsPsi language*, which manages the graphics elements from the graphics library. For its part, the Paint component implements the *PaintPsi language*
+component implements the *PsiGraphs language*, which manages the graphics elements from the graphics library. For its part, the Paint component implements the *PsiPaint language*
 in charge of managing the layout, with the possibility of binding XML and JSON information.
 
-## 3. GraphsPsi Language and Graphs Component
+## 3. PsiGraphs Language and Graphs Component
 
-### 3.1 GraphsPsi Language
-The *GraphsPsi language* manages the graphics elements from the graphics library by defining the next tags: **GraphsPsi**, **Defs**, **Shape** and **Path**. Following 
+### 3.1 PsiGraphs Language
+The *PsiGraphs language* manages the graphics elements from the graphics library by defining the next tags: **PsiGraphs**, **Defs**, **Shape** and **Path**. Following 
 the steps mentioned at the beginning of this section, in Figure 2(a) we can see the [Psi Language Structure Diagram](http://hilas.ii.uam.es/api), and in la Figure 2(b) 
-we can see the corresponding attribute validation. According to Figure 2(a), the **GraphsPsi** element root is the starting point for the *graphics library*. In addition 
+we can see the corresponding attribute validation. According to Figure 2(a), the **PsiGraphs** element root is the starting point for the *graphics library*. In addition 
 it contains next tags:
 
 -  **Defs** (optional) contains the SVG definitions such as symbols, tags, styles, etc. It has an identifier (*id* attribute) for each SVG definition so that they can be referenced by graphics elements.
@@ -53,13 +53,13 @@ it contains next tags:
    the line to move. The *defs* and *class* attributes work similarly in the **Shape** tag.
 
 ![Psi Language Structure Diagram](images/Figure2.png)<br>
-**Figure 2**. (a) PsiLSD for the GraphsPsi language. (b) PsiGVA for the GraphsPsi grammar. (c) Class diagram for the Graphs component.
+**Figure 2**. (a) PsiLSD for the PsiGraphs language. (b) PsiGVA for the PsiGraphs grammar. (c) Class diagram for the Graphs component.
 
-The fragment xml code shows the template definition for each of the elements detailed in the GraphsPsi language.
+The fragment xml code shows the template definition for each of the elements detailed in the PsiGraphs language.
 
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
-<GraphsPsi alias="sample">
+<PsiGraphs alias="sample">
   <Defs id="…">
     <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
       <defs> <!-- SVG definitions --> </defs>
@@ -75,18 +75,18 @@ The fragment xml code shows the template definition for each of the elements det
       <!-- SVG graphics elements -->
     </svg>
   </Path> ...
-</GraphsPsi>
+</PsiGraphs>
 ```
 
 ### 3.2 Graphs Component
-The **Graphs** component implements the functionality associated with *GraphsPsi language* and Figure 2(c) shows its class diagram. To simplify, the class associated 
-to each tag has the same name, for example, the **Shape** tag has the *Shape* class and so on. It is noteworthy that the *GraphsPsi*, *Base* and *Defs* classes inherit 
+The **Graphs** component implements the functionality associated with *PsiGraphs language* and Figure 2(c) shows its class diagram. To simplify, the class associated 
+to each tag has the same name, for example, the **Shape** tag has the *Shape* class and so on. It is noteworthy that the *PsiGraphs*, *Base* and *Defs* classes inherit 
 from the abstract class *PsiElement* from [PsiXML](http://hilas.ii.uam.es/api).
 
 When the Graphs component is initialized it creates three classifiers in the **PsiData**, namely: the "shape", "path" and "defs". The figures, lines and SVG definitions 
 will be stored and made available for each of classifier.
 
-Following Figure 2(c), *GraphsPsi* class manages the SVG definitions, the list of lines and the list of figures. *Defs* class register all SVG definitions in "defs" from 
+Following Figure 2(c), *PsiGraphs* class manages the SVG definitions, the list of lines and the list of figures. *Defs* class register all SVG definitions in "defs" from 
 **PsiData** with its identifiers. *Base* class manages the SVG document for the graphics element (shape or line), registers the instance in **PsiData**, creates the drag 
 functionality by using the *drag-selector* attribute and binds the corresponding CSS style by using the *class* attribute. It also has the ability to clone the SVG elements 
 to "instantiate" the graphics element. The *Shape* and *Path* classes inherit from the Base class allowing customizing the drag and drop, scale and rotation functionalities. 
@@ -94,12 +94,12 @@ The *DragPoint* class dynamically creates a point for the movement of the ends o
 
 The detailed class diagram and the documentation for the **Graphs** component can be find [here](http://hilas.ii.uam.es/grapher/api).
 
-## 4. PaintPsi Language and Paint Component
+## 4. PsiPaint Language and Paint Component
 
-### 4.1 PaintPsi Language
-The *PaintPsi language* aims to layout figures and lines basing on the GraphsPsi. To do so, it defines the following tags: **PaintPsi**, **Include**, **Script**, **Layer**, 
+### 4.1 PsiPaint Language
+The *PsiPaint language* aims to layout figures and lines basing on the PsiGraphs. To do so, it defines the following tags: **PsiPaint**, **Include**, **Script**, **Layer**, 
 **Figure**, **Line**, **Setting** and **Modify**. Following the same steps used in previous subsection, Figure 3(a) shows the [structure diagram](http://hilas.ii.uam.es/api) 
-for the *PaintPsi language*, and Figure 3(b) shows the validation attributes for the *PaintPsi grammar*. In Figure 3(a) the **PaintPsi** root tag specifies the width and height 
+for the *PsiPaint language*, and Figure 3(b) shows the validation attributes for the *PsiPaint grammar*. In Figure 3(a) the **PsiPaint** root tag specifies the width and height 
 for the active SVG canvas. In addition it allows detail the next tags:
 
 -  **Include** (optional, multiple): adds XML and JSON data with an alias in **PsiData** (in "document" and "json" classifiers respectively).
@@ -118,13 +118,13 @@ for the active SVG canvas. In addition it allows detail the next tags:
    will be applied.
 
 ![Psi Language Structure Diagram](images/Figure3.png)<br>
-**Figure 3**. (a) PsiLSD for the PaintPsi language. (b) PsiGVA for the PaintPsi grammar. (c) Class diagram for the Paint component.
+**Figure 3**. (a) PsiLSD for the PsiPaint language. (b) PsiGVA for the PsiPaint grammar. (c) Class diagram for the Paint component.
 
-The fragment xml code shows the template for each element from the PaintPsi language.
+The fragment xml code shows the template for each element from the PsiPaint language.
 
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
-<PaintPsi xmlns:xlink="http://www.w3.org/1999/xlink" width="…" height="…">
+<PsiPaint xmlns:xlink="http://www.w3.org/1999/xlink" width="…" height="…">
   <Include alias="…" url="…" type="…"/> ...
   <Layer id="…" class="…">
     <Figure id="…" x="x" y="y" shape="…" data-document="…" scale="…" angle="…">
@@ -136,15 +136,15 @@ The fragment xml code shows the template for each element from the PaintPsi lang
     <Script id="…"><!-- Script definition --></Script> ...
   </Layer> ...
   <Script id="…"><!-- Script definition --></Script> ...
-</PaintPsi>
+</PsiPaint>
 ```
 
 ### 4.2 Paint Component
-The **Paint** component implements the functionality associated with the *PaintPsi language*, as shown in the class diagram of Figure 3(c). As in the **Graphs** component, 
-the class associated with each tag has the same name, that is, the **PaintPsi** tag is related to the *PaintPsi* class, the **Include** tag is related to the *Include* class, 
+The **Paint** component implements the functionality associated with the *PsiPaint language*, as shown in the class diagram of Figure 3(c). As in the **Graphs** component, 
+the class associated with each tag has the same name, that is, the **PsiPaint** tag is related to the *PsiPaint* class, the **Include** tag is related to the *Include* class, 
 and so on.
 
-The *PaintPsi* root class manages the graphics layers, the inclusions and the scripts. It initializes the context and adds all the available layers to the active SVG canvas.
+The *PsiPaint* root class manages the graphics layers, the inclusions and the scripts. It initializes the context and adds all the available layers to the active SVG canvas.
 The *Include* class is responsible for fetching and registering XML documents and JSON objects into PsiData. The *Script* class registers scripts, which are used to add 
 dynamism to the diagram and, once evaluated, are available three environment variables: the active SVG canvas, the PsiData, and current elements graphics.
 
@@ -161,9 +161,9 @@ To implement polylines or Bessel curves it is necessary typify the Line class an
 
 The class diagram and detailed documentation for the Paint component can be find [here](http://hilas.ii.uam.es/grapher/api).
 
-## 5. Example using the GraphsPsi and PaintPsi languages
-Figure 4 shows a snippet of the graphics library in *GraphsPsi* language ("library.xml" file) and a fragment of a *PaintPsi* code diagram (file "maths.xml"). This example 
-highlights the bindings of *GraphsPsi* and *PaintPsi* languages with XML information (file "db.xml"). This example is available in the "Sample" project of the Grapher 
+## 5. Example using the PsiGraphs and PsiPaint languages
+Figure 4 shows a snippet of the graphics library in *PsiGraphs* language ("library.xml" file) and a fragment of a *PsiPaint* code diagram (file "maths.xml"). This example 
+highlights the bindings of *PsiGraphs* and *PsiPaint* languages with XML information (file "db.xml"). This example is available in the "Sample" project of the Grapher 
 application (see next section).
 
 The "library.xml" fragment provides the following elements: Defs (Symbols id = "home" and id="user"; Markers id="circle"; Styles id="styles"), Shapes (id="element") and 
@@ -175,26 +175,26 @@ node Person with id="1" (attribute data-document) from file "db.xml" is associat
 the XML file through the Setting tag (text="{{p.name}}"). This name is added as text in the SVG text label. The symbol used to figure id="p1" is the "user" (href="# user"). 
 The visual effect of this sequence can be seen in Figure 4.
 
-![Binding GraphsPsi and PaintPsi](images/Figure4.png)<br>
-**Figure 4**. Binding GraphsPsi and PaintPsi with XML information.
+![Binding PsiGraphs and PsiPaint](images/Figure4.png)<br>
+**Figure 4**. Binding PsiGraphs and PsiPaint with XML information.
 
 ## 6. 4.5	Grapher Web Application
 Once implemented the **Graphs** and **Paint** reusable components, we have developed the web application we have called **Grapher**. This application is a lightweight development 
 environment for creating diagrams and graphs models. It is based on projects, the edition of XML files and the use of the **Paint** and **Graphs** components.
 
-In Figure 5, we can see a **Grapher** snapshot where we can identify two sections: Project and Psi Diagram. A project is a set of graphics libraries (files GraphsPsi), 
-layout (PaintPsi files), XML data sources (XML files) and JSON data sources (JSON files). The Psi Diagram is a SVG canvas where the layouts files will be evaluated. 
+In Figure 5, we can see a **Grapher** snapshot where we can identify two sections: Project and Psi Diagram. A project is a set of graphics libraries (files PsiGraphs), 
+layout (PsiPaint files), XML data sources (XML files) and JSON data sources (JSON files). The Psi Diagram is a SVG canvas where the layouts files will be evaluated. 
 The Grapher main features are described below:
 
 -  **Project Menu**: it creates, opens or closes a project. Create a project involves creating a directory on the server with the alias of the project, and inside this 
-   directory three additional subdirectories, namely: graphs (to host GraphsPsi files), paints (to host PaintPsi files) and data (to hosts XML and JSON data files). Open 
+   directory three additional subdirectories, namely: graphs (to host PsiGraphs files), paints (to host PsiPaint files) and data (to hosts XML and JSON data files). Open 
    a project means to bring the directory structure and manage it in the Project section. Each subdirectory is shown in the corresponding tab (Graphs Psi, Paint Psi and Data). 
    Delete a project involves removing the directory from the server. In addition, there are debugging tools, and features to allow cleaning the diagram, seeing the SVG 
-   generated code and displaying the PaintPsi source code.
--  **GraphsPsi Editor**: it edits GraphsPsi source code file from the active project. The editor provides autocompletion tools for the *GraphsPsi grammar*. When evaluating a 
-   GraphsPsi file, the graphic elements are available in PsiData and the number of executions is increased and highlighted in green.
--  **PaintPsi Editor**: it edits PaintPsi source code file from the active project. In the same way the GraphsPsi Editor, it has autocompleting features for the *PaintPsi grammar*. 
-   When evaluating a PaintPsi file, its layout is built on the SVG canvas from the Psi Diagram section and the number of executions is increased and highlighted in green. 
+   generated code and displaying the PsiPaint source code.
+-  **PsiGraphs Editor**: it edits PsiGraphs source code file from the active project. The editor provides autocompletion tools for the *PsiGraphs grammar*. When evaluating a 
+   PsiGraphs file, the graphic elements are available in PsiData and the number of executions is increased and highlighted in green.
+-  **PsiPaint Editor**: it edits PsiPaint source code file from the active project. In the same way the PsiGraphs Editor, it has autocompleting features for the *PsiPaint grammar*. 
+   When evaluating a PsiPaint file, its layout is built on the SVG canvas from the Psi Diagram section and the number of executions is increased and highlighted in green. 
    It must be notice that if the same program is evaluated twice, the graphic elements change but no more are added.
 -  **XML Editor**: it edits XML data files (*.xml).
 -  **JSON Editor**: it edits JSON data files (*.json).

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><PaintPsi xmlns:xlink="http://www.w3.org/1999/xlink" width="880" height="500">
+<?xml version="1.0" encoding="utf-8"?><PsiPaint xmlns:xlink="http://www.w3.org/1999/xlink" width="880" height="400">
   <Include alias="chalet" url="files/PERT/data/chalet.xml"/>
 
   <Layer id="framework" class="pert">
@@ -108,4 +108,4 @@
     <Line id="nH-n1" path="arrow" class="arrow" data-document="chalet:i=Arrow[id=nH-n1]" start="706,191" end="811,191"/>
     <Line id="nI-n1" path="arrow" class="arrow" data-document="chalet:i=Arrow[id=nI-n1]" start="200,274" end="813,197"/>
   </Layer>
-</PaintPsi>
+</PsiPaint>
