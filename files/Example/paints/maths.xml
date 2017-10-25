@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?><PaintPsi xmlns:xlink="http://www.w3.org/1999/xlink"  width="380" height="100">
+  <Include alias="db" url="files/Example/data/db.xml"/>
+  <Layer id="sites" class="example">
+    <Figure id="home" x="220" y="30" shape="element" data-document="db:s=Site[id=1]">
+      <Setting key="name" text="{{s.name}}"/>
+      <Setting key="type" href="#home"/>
+    </Figure>
+  </Layer>
+  <Layer id="persons" class="example">
+    <Figure id="p1" x="20" y="30" shape="element" data-document="db:p=Person[id=1]">
+      <Setting key="name" text="{{p.name}}"/>
+      <Setting key="type" href="#user"/>
+    </Figure>
+  </Layer>
+  <Layer id="lines" class="example">
+    <Line id="l1" path="connection" start="140,50" end="220,50"/>     
+  </Layer>
+</PaintPsi>

@@ -159,9 +159,14 @@ The *Figure* class inherits from the Base class and aims to paint a picture. It 
 (width and height). The *Line* class inherits from the Base class too and aims to paint a straight line. It implements the ability to move the starting and end points. 
 To implement polylines or Bessel curves it is necessary typify the Line class and add corresponding behaviour of each one.
 
-The class diagram and detailed documentation for the Paint component can be find [here](http://hilas.ii.uam.es/grapher/api).
+## 6. Class Diagram WebGrapher
 
-## 5. Example using the PsiGraphs and PsiPaint languages
+![Class Diagram WebGrapher](images/Figure7.png)<br>
+**Figure 3**. Class Diagram WebGrapher.
+
+The class diagram and detailed documentation for the Graphs component and Paint Component can be find [here](http://hilas.ii.uam.es/grapher/api).
+
+## 7. Example using the PsiGraphs and PsiPaint languages
 Figure 4 shows a snippet of the graphics library in *PsiGraphs* language ("library.xml" file) and a fragment of a *PsiPaint* code diagram (file "maths.xml"). This example 
 highlights the bindings of *PsiGraphs* and *PsiPaint* languages with XML information (file "db.xml"). This example is available in the "Sample" project of the Grapher 
 application (see next section).
@@ -178,7 +183,7 @@ The visual effect of this sequence can be seen in Figure 4.
 ![Binding PsiGraphs and PsiPaint](images/Figure4.png)<br>
 **Figure 4**. Binding PsiGraphs and PsiPaint with XML information.
 
-## 6. 4.5	Grapher Web Application
+## 8.	Grapher Web Application
 Once implemented the **Graphs** and **Paint** reusable components, we have developed the web application we have called **Grapher**. This application is a lightweight development 
 environment for creating diagrams and graphs models. It is based on projects, the edition of XML files and the use of the **Paint** and **Graphs** components.
 
@@ -202,6 +207,6 @@ The Grapher main features are described below:
 ![Grapher](images/Figure5.png)<br>
 **Figure 5**. *Grapher*: lightweight development environment for the use Graphs and Paint components.
 
-## 7. Installation
+## 9. Installation
 Create a website and copy all files. The file "index.html" running **Grapher Web Application**. The file "api.html" is documentation the **Graphs** and **Paint** component. 
 

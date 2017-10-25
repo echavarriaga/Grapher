@@ -38,6 +38,10 @@
       <Setting key="name" text="{{p.name}}"/>
       <Setting key="type" href="#{{p.type}}"/>
     </Figure>
+    <Figure id="checkout-group" x="340" y="200" shape="bpm-group">
+      <Setting key="title" text="Checkout" x="95" y="180"/>
+      <Setting key="box" href="#" width="190" height="190"/>
+    </Figure>
     <Figure id="29" x="359" y="223" shape="bpm-task" data-document="process:p=Task[id=29]" data-context="data:d=Task.29" scripts="menu">
       <Setting key="name" text="{{p.name}}"/>
       <Setting key="type" href="#{{p.type}}"/>

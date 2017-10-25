@@ -39,8 +39,8 @@
 
   <Shape id="bpm-gateway" drag-selector=".drag" defs="bpm-styles,bpm-gateway-exclusive,bpm-gateway-inclusive,bpm-gateway-complex,bpm-gateway-parallel,bpm-gateway-event,bpm-gateway-event-parallel">
     <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1">
-        <text key="name" class="gateway-name" x="30" y="40"/>
-        <use key="type" class="gateway" x="15" y="0" width="30" height="30" xlink:href="#"/>
+        <text key="name" class="gateway-name" x="30" y="30"/>
+        <use key="type" class="gateway" x="15" y="0" width="30" height="40" xlink:href="#"/>
         <path key="menu" class="popup" d="m40,22 h8 m0,3 h-8 m0,3 h8" fill="white" stroke-width="2px" stroke="gray" stroke-linejoin="round" stroke-linecap="round"/>
     </svg>
   </Shape>

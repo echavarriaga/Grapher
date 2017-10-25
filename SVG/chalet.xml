@@ -1,0 +1,263 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<svg version="1.1" width="880" height="500" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 880 500">
+  
+  <defs id="manager-defs">
+    <style id="pert-styles" type="text/css">
+      <![CDATA[
+          .pert { font-family: arial; font-size: 12px; border: solid 1px #f0f0f0; }
+          .pert .header-title { text-anchor: middle; font-size: 1.2em; font-weight: bold; }
+					.pert .header-subtitle { text-anchor: middle; font-size: 0.8em; font-weight: bold; fill: gray; }
+          .pert .box { fill: #fcfcfc; stroke: #f0f0f0; stroke-width: .8px; }
+          .pert .body { fill: #fcfcfc; stroke: #f0f0f0; stroke-width: .8px; }
+          .pert .drag, .pert .submenu, .pert .button { cursor: pointer; }
+
+          .pert .extreme {} 
+          .pert .extreme .label { text-anchor:middle; font-weight: bold; }
+          .pert .extreme .start { stroke:gray; stroke-width:1.2px; fill: #ffffb9; }
+          .pert .extreme .end { stroke:gray; stroke-width:1.2px; fill: #a4b2ff; }
+            
+          .pert .activity .label { text-anchor:middle; }
+          .pert .activity .circle { stroke:gray; stroke-width:.8px; fill: #f0f0f0; }
+          .pert .activity .duration { text-anchor: middle; font-size: 1em; font-weight: bold; }
+          .pert .activity .slack { font-size: 0.8em; fill: gray; }
+
+          .pert .critical .circle,
+          .pert .critical .start,
+          .pert .critical .end { stroke:#bf0000; stroke-width:1.3px; fill: #f5cccc; }
+          .pert .critical .label { text-anchor:middle; font-weight: bold; fill: #bf0000; }
+          .pert .critical .duration { text-anchor: middle; font-size: 1em; font-weight: bold; fill: #bf0000; }
+          .pert .critical .slack { font-size: 0.8em; fill: #bf0000; }
+
+          .pert .route .circle,
+          .pert .route .start,
+          .pert .route .end { stroke:#007f00; stroke-width:1.3px; fill: #baffba; }
+          .pert .route .label { text-anchor:middle; font-weight: bold; fill: #007f00; }
+          .pert .route .duration { text-anchor: middle; font-size: 1em; font-weight: bold; fill: #007f00; }
+          .pert .route .slack { font-size: 0.8em; fill: #007f00; }
+
+          .pert .arrow .line { stroke:gray; stroke-width:1.2px; fill: none; marker-start: url(#marker-circle); marker-end: url(#marker-rightarrow); }
+          .pert .critical .line { stroke:#bf0000; stroke-width:1.2px; fill: none; marker-start: url(#marker-circle-red); marker-end: url(#marker-rightarrow-red); }
+          .pert .route .line { stroke:#007f00; stroke-width:1.2px; fill: none; marker-start: url(#marker-circle-green); marker-end: url(#marker-rightarrow-green); }
+        ]]>
+    </style>
+    
+    <marker id="marker-circle" refY="50" refX="50" markerHeight="8" markerWidth="8" viewBox="0 0 100 100" orient="auto" markerUnits="strokeWidth">
+      <circle stroke-width="10" stroke="gray" fill="white" cy="50" cx="50" r="30"/>
+    </marker>
+    <marker id="marker-rightarrow" refY="50" refX="50" markerHeight="8" markerWidth="8" viewBox="0 0 100 100" orient="auto" markerUnits="strokeWidth">
+      <path stroke-width="10" stroke="gray" fill="gray" d="m100,50l-100,40l30,-40l-30,-40z"/>
+    </marker>
+    <marker id="marker-circle-red" refY="50" refX="50" markerHeight="8" markerWidth="8" viewBox="0 0 100 100" orient="auto" markerUnits="strokeWidth">
+      <circle stroke-width="10" stroke="#bf0000" fill="#f5cccc" cy="50" cx="50" r="30"/>
+    </marker>
+    <marker id="marker-rightarrow-red" refY="50" refX="50" markerHeight="8" markerWidth="8" viewBox="0 0 100 100" orient="auto" markerUnits="strokeWidth">
+      <path stroke-width="10" stroke="#bf0000" fill="#bf0000" d="m100,50l-100,40l30,-40l-30,-40z"/>
+    </marker>
+    <marker id="marker-circle-green" refY="50" refX="50" markerHeight="8" markerWidth="8" viewBox="0 0 100 100" orient="auto" markerUnits="strokeWidth">
+      <circle stroke-width="10" stroke="#007f00" fill="#baffba" cy="50" cx="50" r="30"/>
+    </marker>
+    <marker id="marker-rightarrow-green" refY="50" refX="50" markerHeight="8" markerWidth="8" viewBox="0 0 100 100" orient="auto" markerUnits="strokeWidth">
+      <path stroke-width="10" stroke="#007f00" fill="#007f00" d="m100,50l-100,40l30,-40l-30,-40z"/>
+    </marker>
+  </defs>
+  
+  
+  <g id="framework" class="pert">
+    <g id="frame" type="shape" transform="translate(0 0) scale(1 1) rotate(0)">
+      <g id="panel-diagram-header" transform="translate(3,3)">
+        <rect key="box" x="0" y="0" width="892" height="40" rx="4" ry="4" fill="#fcfcfc" class="box"/>
+        <text key="title" x="446" y="25" class="header-title">PERT Diagram - Chalet Construction</text>
+        <text key="subtitle" x="446" y="36" class="header-subtitle">Created by Enrique</text>
+      </g>
+      <rect key="body" x="3" y="46" width="892" height="398" class="body"/>
+      
+      <g key="legend" class="activity" transform="translate(3 450)">
+        <rect key="legend-box" x="0" y="0" width="892" height="45" rx="4" ry="4" fill="#fcfcfc" class="box"/>
+        <text x="10" y="25" class="footer-label">Legends</text>
+        <text x="100" y="35" class="label" style="font-size: 0.8em;">Initial Node</text>
+        <circle key="start" cx="100" cy="18" r="8" fill="#ffffb9" stroke="gray" stroke-width="1px"/>
+        <text x="160" y="35" class="label" style="font-size: 0.8em;">Final Node</text>
+        <circle key="end" cx="160" cy="18" r="8" fill="#a4b2ff" stroke="gray" stroke-width="1px"/>
+        <g transform="translate(200,7) scale(0.7)">
+          <title>Activity description</title>
+          <text x="40" y="48" class="label" style="font-size:1.3em;">Activity</text>
+          <circle fill="#fcfcfc" class="circle" cx="40" cy="15" r="15"/>
+          <text class="duration" x="40" y="20" style="font-size:1.1em;">
+            <title>Duration</title>DU
+          </text>
+          <text x="55" y="5" class="slack" style="font-size:1.2em;">
+            <title>Slack</title>FU
+          </text>
+        </g>
+        <g id="labels" transform="translate(280,2)" style="font-size: 0.9em;">
+          <text x="0" y="16" class="footer-item">DU = Activity duration</text>
+          <text x="0" y="32" class="footer-item">FU = Slack activity</text>
+        </g>
+      </g>
+    </g>
+  </g>
+  
+  
+  <g id="nodes" class="pert">
+    <g id="n0" type="shape" class="extreme" transform="translate(34 171) scale(1 1) rotate(0)">
+      <title key="alt">Inicio/Fin</title>
+      <circle key="circle" cx="30" cy="20" r="12" class="drag start"/>
+      <text key="label" x="30" y="45" class="label">Initial</text>
+    </g>
+    <g id="nA" type="shape" class="activity" transform="translate(145 177) scale(1 1) rotate(0)">
+      <title key="alt">Activity</title>
+      <circle key="circle" cx="40" cy="15" r="15" class="drag circle"/>
+      <text key="label" x="40" y="45" class="drag label">Fundation</text>
+      <text key="duration" class="drag duration" x="40" y="20">10</text>
+      <text key="slack" x="55" y="5" class="drag slack">5</text>
+    </g>
+    <g id="nB" type="shape" class="activity" transform="translate(280 177) scale(1 1) rotate(0)">
+      <title key="alt">Activity</title>
+      <circle key="circle" cx="40" cy="15" r="15" class="drag circle"/>
+      <text key="label" x="40" y="45" class="drag label">Windows/Doors</text>
+      <text key="duration" class="drag duration" x="40" y="20">13</text>
+      <text key="slack" x="55" y="5" class="drag slack">5</text>
+    </g>
+    <g id="nC" type="shape" class="activity" transform="translate(280 257) scale(1 1) rotate(0)">
+      <title key="alt">Activity</title>
+      <circle key="circle" cx="40" cy="15" r="15" class="drag circle"/>
+      <text key="label" x="40" y="45" class="drag label">Divers</text>
+      <text key="duration" class="drag duration" x="40" y="20">8</text>
+      <text key="slack" x="55" y="5" class="drag slack">5</text>
+    </g>
+    <g id="nD" type="shape" class="activity" transform="translate(145 98) scale(1 1) rotate(0)">
+      <title key="alt">Activity</title>
+      <circle key="circle" cx="40" cy="15" r="15" class="drag circle"/>
+      <text key="label" x="40" y="45" class="drag label">Pool</text>
+      <text key="duration" class="drag duration" x="40" y="20">21</text>
+      <text key="slack" x="55" y="5" class="drag slack">0</text>
+    </g>
+    <g id="nE" type="shape" class="activity" transform="translate(280 336) scale(1 1) rotate(0)">
+      <title key="alt">Activity</title>
+      <circle key="circle" cx="40" cy="15" r="15" class="drag circle"/>
+      <text key="label" x="40" y="45" class="drag label">Exterior</text>
+      <text key="duration" class="drag duration" x="40" y="20">10</text>
+      <text key="slack" x="55" y="5" class="drag slack">0</text>
+    </g>
+    <g id="nF" type="shape" class="activity" transform="translate(395 98) scale(1 1) rotate(0)">
+      <title key="alt">Activity</title>
+      <circle key="circle" cx="40" cy="15" r="15" class="drag circle"/>
+      <text key="label" x="40" y="45" class="drag label">Roofs</text>
+      <text key="duration" class="drag duration" x="40" y="20">7</text>
+      <text key="slack" x="55" y="5" class="drag slack">0</text>
+    </g>
+    <g id="nG" type="shape" class="activity" transform="translate(395 177) scale(1 1) rotate(0)">
+      <title key="alt">Activity</title>
+      <circle key="circle" cx="40" cy="15" r="15" class="drag circle"/>
+      <text key="label" x="40" y="45" class="drag label">Floors</text>
+      <text key="duration" class="drag duration" x="40" y="20">16</text>
+      <text key="slack" x="55" y="5" class="drag slack">5</text>
+    </g>
+    <g id="nH" type="shape" class="activity" transform="translate(650 177) scale(1 1) rotate(0)">
+      <title key="alt">Activity</title>
+      <circle key="circle" cx="40" cy="15" r="15" class="drag circle"/>
+      <text key="label" x="40" y="45" class="drag label">Paintings</text>
+      <text key="duration" class="drag duration" x="40" y="20">14</text>
+      <text key="slack" x="55" y="5" class="drag slack">0</text>
+    </g>
+    <g id="nI" type="shape" class="activity" transform="translate(145 257) scale(1 1) rotate(0)">
+      <title key="alt">Activity</title>
+      <circle key="circle" cx="40" cy="15" r="15" class="drag circle"/>
+      <text key="label" x="40" y="45" class="drag label">Sale</text>
+      <text key="duration" class="drag duration" x="40" y="20">30</text>
+      <text key="slack" x="55" y="5" class="drag slack">0</text>
+    </g>
+    <g id="nJ" type="shape" class="activity" transform="translate(529 177) scale(1 1) rotate(0)">
+      <title key="alt">Activity</title>
+      <circle key="circle" cx="40" cy="15" r="15" class="drag circle"/>
+      <text key="label" x="40" y="45" class="drag label">Electricity</text>
+      <text key="duration" class="drag duration" x="40" y="20">7</text>
+      <text key="slack" x="55" y="5" class="drag slack">2</text>
+    </g>
+    <g id="nK" type="shape" class="activity" transform="translate(280 98) scale(1 1) rotate(0)">
+      <title key="alt">Activity</title>
+      <circle key="circle" cx="40" cy="15" r="15" class="drag circle"/>
+      <text key="label" x="40" y="45" class="drag label">Facade</text>
+      <text key="duration" class="drag duration" x="40" y="20">5</text>
+      <text key="slack" x="55" y="5" class="drag slack">5</text>
+    </g>
+    <g id="n1" type="shape" class="extreme" transform="translate(798 171) scale(1 1) rotate(0)">
+      <title key="alt">Inicio/Fin</title>
+      <circle key="circle" cx="30" cy="20" r="12" class="drag end"/>
+      <text key="label" x="30" y="45" class="label">Delivery</text>
+    </g>
+  </g>
+  
+  
+  <g id="arrows" class="pert">
+    <g id="n0-nA" type="path" class="arrow" transform="translate(0 0) scale(1 1) rotate(0)">
+      <title key="alt">Título</title>
+      <line key="line" x1="77" y1="191" x2="164" y2="191" class="drag line"/>
+    </g>
+    <g id="n0-nD" type="path" class="arrow" transform="translate(0 0) scale(1 1) rotate(0)">
+      <title key="alt">Título</title>
+      <line key="line" x1="74" y1="183" x2="166" y2="121" class="drag line"/>
+    </g>
+    <g id="n0-nI" type="path" class="arrow" transform="translate(0 0) scale(1 1) rotate(0)">
+      <title key="alt">Título</title>
+      <line key="line" x1="75" y1="198" x2="166" y2="265" class="drag line"/>
+    </g>
+    <g id="nA-nB" type="path" class="arrow" transform="translate(0 0) scale(1 1) rotate(0)">
+      <title key="alt">Título</title>
+      <line key="line" x1="200" y1="191" x2="300" y2="191" class="drag line"/>
+    </g>
+    <g id="nA-nC" type="path" class="arrow" transform="translate(0 0) scale(1 1) rotate(0)">
+      <title key="alt">Título</title>
+      <line key="line" x1="198" y1="199" x2="302" y2="264" class="drag line"/>
+    </g>
+    <g id="nB-nF" type="path" class="arrow" transform="translate(0 0) scale(1 1) rotate(0)">
+      <title key="alt">Título</title>
+      <line key="line" x1="332" y1="186" x2="418" y2="121" class="drag line"/>
+    </g>
+    <g id="nB-nG" type="path" class="arrow" transform="translate(0 0) scale(1 1) rotate(0)">
+      <title key="alt">Título</title>
+      <line key="line" x1="335" y1="191" x2="414" y2="191" class="drag line"/>
+    </g>
+    <g id="nD-nE" type="path" class="arrow" transform="translate(0 0) scale(1 1) rotate(0)">
+      <title key="alt">Título</title>
+      <line key="line" x1="198" y1="121" x2="310" y2="334" class="drag line"/>
+    </g>
+    <g id="nD-nK" type="path" class="arrow" transform="translate(0 0) scale(1 1) rotate(0)">
+      <title key="alt">Título</title>
+      <line key="line" x1="200" y1="113" x2="300" y2="113" class="drag line"/>
+    </g>
+    <g id="nE-nH" type="path" class="arrow" transform="translate(0 0) scale(1 1) rotate(0)">
+      <title key="alt">Título</title>
+      <line key="line" x1="335" y1="351" x2="676" y2="204" class="drag line"/>
+    </g>
+    <g id="nC-nH" type="path" class="arrow" transform="translate(0 0) scale(1 1) rotate(0)">
+      <title key="alt">Título</title>
+      <line key="line" x1="335" y1="273" x2="672" y2="198" class="drag line"/>
+    </g>
+    <g id="nG-nJ" type="path" class="arrow" transform="translate(0 0) scale(1 1) rotate(0)">
+      <title key="alt">Título</title>
+      <line key="line" x1="450" y1="191" x2="548" y2="191" class="drag line"/>
+    </g>
+    <g id="nJ-nH" type="path" class="arrow" transform="translate(0 0) scale(1 1) rotate(0)">
+      <title key="alt">Título</title>
+      <line key="line" x1="584" y1="191" x2="671" y2="191" class="drag line"/>
+    </g>
+    <g id="nK-nG" type="path" class="arrow" transform="translate(0 0) scale(1 1) rotate(0)">
+      <title key="alt">Título</title>
+      <line key="line" x1="332" y1="123" x2="420" y2="180" class="drag line"/>
+    </g>
+    <g id="nF-n1" type="path" class="arrow" transform="translate(0 0) scale(1 1) rotate(0)">
+      <title key="alt">Título</title>
+      <line key="line" x1="450" y1="114" x2="813" y2="185" class="drag line"/>
+    </g>
+    <g id="nH-n1" type="path" class="arrow" transform="translate(0 0) scale(1 1) rotate(0)">
+      <title key="alt">Título</title>
+      <line key="line" x1="706" y1="191" x2="811" y2="191" class="drag line"/>
+    </g>
+    <g id="nI-n1" type="path" class="arrow" transform="translate(0 0) scale(1 1) rotate(0)">
+      <title key="alt">Título</title>
+      <line key="line" x1="200" y1="274" x2="813" y2="197" class="drag line"/>
+    </g>
+  </g>
+
+</svg>
